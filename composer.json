@@ -1,5 +1,5 @@
 {
-    "name": "jms/translation-bundle",
+    "name": "alvadi-it/translation-bundle",
     "type": "symfony-bundle",
     "description": "Puts the Symfony Translation Component on steroids",
     "keywords": [
