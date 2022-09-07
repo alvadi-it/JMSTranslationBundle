@@ -60,17 +60,21 @@ class DefaultApplyingNodeVisitor extends AbstractNodeVisitor
             return $node;
         }
 
-        if ($node instanceof FilterExpression
-                && 'desc' === $node->getNode('filter')->getAttribute('value')) {
+        if (
+            $node instanceof FilterExpression
+                && 'desc' === $node->getNode('filter')->getAttribute('value')
+        ) {
             $transNode = $node->getNode('node');
-            while ($transNode instanceof FilterExpression
+            while (
+                $transNode instanceof FilterExpression
                        && 'trans' !== $transNode->getNode('filter')->getAttribute('value')
-                       && 'transchoice' !== $transNode->getNode('filter')->getAttribute('value')) {
+                       && 'transchoice' !== $transNode->getNode('filter')->getAttribute('value')
+            ) {
                 $transNode = $transNode->getNode('node');
             }
 
             if (!$transNode instanceof FilterExpression) {
-                throw new RuntimeException(sprintf('The "desc" filter must be applied after a "trans", or "transchoice" filter.'));
+                throw new RuntimeException(sprintf('The "desc" filter in "%s" line %d must be applied after a "trans", or "transchoice" filter.', $node->getTemplateName(), $node->getTemplateLine()));
             }
 
             $wrappingNode = $node->getNode('node');

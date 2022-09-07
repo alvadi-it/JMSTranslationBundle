@@ -22,6 +22,7 @@ namespace JMS\TranslationBundle\Tests\Translation\Extractor\File\Fixture;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 class MyFormType extends AbstractType
 {
@@ -43,6 +44,10 @@ class MyFormType extends AbstractType
             ->add('street', 'text', [
                 'label' => /** @Desc("Street") */ 'form.label.street',
                 'translation_domain' => 'address',
+                'constraints' => [
+                    new NotBlank(['message' => /** @Desc("You should fill in the street") */ 'form.street.empty_value']),
+                    new Length(['max' => 100]), // https://github.com/schmittjoh/JMSTranslationBundle/issues/553
+                ],
             ])
             ->add('zip', 'text', [
                 /** @Desc("ZIP") */

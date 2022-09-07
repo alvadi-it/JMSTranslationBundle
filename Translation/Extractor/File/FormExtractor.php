@@ -120,7 +120,7 @@ class FormExtractor implements FileVisitorInterface, LoggerAwareInterface, NodeV
 
             // look for options containing a message
             foreach ($node->items as $item) {
-                if (!$item->key instanceof Node\Scalar\String_) {
+                if (!$item || !$item->key instanceof Node\Scalar\String_) {
                     continue;
                 }
 
@@ -150,6 +150,12 @@ class FormExtractor implements FileVisitorInterface, LoggerAwareInterface, NodeV
                         }
                         $this->parseItem($item, $domain);
                         break;
+                    case 'constraints':
+                        if ($this->parseConstraintNode($item, 'validators')) {
+                            continue 2;
+                        }
+                        $this->parseItem($item, $domain);
+                        break;
                 }
             }
         }
@@ -165,7 +171,7 @@ class FormExtractor implements FileVisitorInterface, LoggerAwareInterface, NodeV
         $domain = null;
 
         foreach ($node->items as $item) {
-            if (!$item->key instanceof Node\Scalar\String_) {
+            if (!$item || !$item->key instanceof Node\Scalar\String_) {
                 continue;
             }
 
@@ -276,6 +282,48 @@ class FormExtractor implements FileVisitorInterface, LoggerAwareInterface, NodeV
         return true;
     }
 
+    /**
+     * This parses any Node of type constraints.
+     *
+     * Returning true means either that regardless of whether
+     * parsing has occurred or not, the enterNode function should move on to the next node item.
+     *
+     * @internal
+     *
+     * @param Node $item
+     * @param string $domain
+     *
+     * @return bool
+     */
+    protected function parseConstraintNode(Node $item, $domain)
+    {
+        if (!$item->value instanceof Node\Expr\Array_) {
+            return true;
+        }
+
+        foreach ($item->value->items as $subItem) {
+            if (
+                !$subItem->value instanceof Node\Expr\New_
+                || !$subItem->value->args
+                || !property_exists($subItem->value->args[0]->value, 'items')
+            ) {
+                continue;
+            }
+
+            foreach ($subItem->value->args[0]->value->items as $messageItem) {
+                if (!$messageItem->key instanceof Node\Scalar\String_) {
+                    continue;
+                }
+                if (strtolower(substr($messageItem->key->value, -7)) !== 'message') {
+                    continue;
+                }
+                $this->parseItem($messageItem, $domain);
+            }
+        }
+
+        return true;
+    }
+
     private function parseDefaultsCall(Node $node)
     {
         static $returningMethods = [
@@ -292,7 +340,7 @@ class FormExtractor implements FileVisitorInterface, LoggerAwareInterface, NodeV
 
         $var = $node->var;
         while ($var instanceof Node\Expr\MethodCall) {
-            if (!isset($returningMethods[strtolower($var->name)])) {
+            if (!isset($returningMethods[strtolower((string) $var->name)])) {
                 return;
             }
 
@@ -308,7 +356,8 @@ class FormExtractor implements FileVisitorInterface, LoggerAwareInterface, NodeV
             return;
         }
 
-        if (isset($node->args[1])
+        if (
+            isset($node->args[1])
             && $node->args[0]->value instanceof Node\Scalar\String_
             && $node->args[1]->value instanceof Node\Scalar\String_
             && 'translation_domain' === $node->args[0]->value->value

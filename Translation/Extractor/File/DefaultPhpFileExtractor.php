@@ -116,8 +116,10 @@ class DefaultPhpFileExtractor implements LoggerAwareInterface, FileVisitorInterf
         if ($node instanceof Node\Expr\MethodCall) {
             $methodCallNodeName = $node->name instanceof Node\Identifier ? $node->name->name : $node->name;
         }
-        if (!is_string($methodCallNodeName)
-            || !in_array(strtolower($methodCallNodeName), array_map('strtolower', array_keys($this->methodsToExtractFrom)))) {
+        if (
+            !is_string($methodCallNodeName)
+            || !in_array(strtolower($methodCallNodeName), array_map('strtolower', array_keys($this->methodsToExtractFrom)))
+        ) {
             $this->previousNode = $node;
 
             return;
@@ -160,7 +162,11 @@ class DefaultPhpFileExtractor implements LoggerAwareInterface, FileVisitorInterf
 
         $index = $this->methodsToExtractFrom[strtolower($methodCallNodeName)];
         if (isset($node->args[$index])) {
-            if (!$node->args[$index]->value instanceof String_) {
+            if ($node->args[$index]->value instanceof Node\Expr\ConstFetch && 'null' === (string) $node->args[$index]->value->name) {
+                $domain = 'messages';
+            } elseif ($node->args[$index]->value instanceof String_) {
+                $domain = $node->args[$index]->value->value;
+            } else {
                 if ($ignore) {
                     return;
                 }
@@ -175,8 +181,6 @@ class DefaultPhpFileExtractor implements LoggerAwareInterface, FileVisitorInterf
 
                 throw new RuntimeException($message);
             }
-
-            $domain = $node->args[$index]->value->value;
         } else {
             $domain = 'messages';
         }
