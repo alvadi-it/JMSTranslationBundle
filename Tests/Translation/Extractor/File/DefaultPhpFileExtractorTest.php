@@ -37,31 +37,31 @@ class DefaultPhpFileExtractorTest extends BasePhpFileExtractorTest
 
         $message = new Message('text.foo_bar');
         $message->setDesc('Foo bar');
-        $message->addSource($fileSourceFactory->create($fixtureSplInfo, 47));
+        $message->addSource($fileSourceFactory->create($fixtureSplInfo, 49));
         $expected->add($message);
 
         $message = new Message('text.sign_up_successful');
         $message->setDesc('Welcome %name%! Thanks for signing up.');
-        $message->addSource($fileSourceFactory->create($fixtureSplInfo, 55));
+        $message->addSource($fileSourceFactory->create($fixtureSplInfo, 57));
         $expected->add($message);
 
         $message = new Message('button.archive');
         $message->setDesc('Archive Message');
         $message->setMeaning('The verb (to archive), describes an action');
-        $message->addSource($fileSourceFactory->create($fixtureSplInfo, 64));
+        $message->addSource($fileSourceFactory->create($fixtureSplInfo, 66));
         $expected->add($message);
 
         $message = new Message('text.irrelevant_doc_comment', 'baz');
-        $message->addSource($fileSourceFactory->create($fixtureSplInfo, 77));
+        $message->addSource($fileSourceFactory->create($fixtureSplInfo, 79));
         $expected->add($message);
 
         $message = new Message('text.array_method_call');
-        $message->addSource($fileSourceFactory->create($fixtureSplInfo, 82));
+        $message->addSource($fileSourceFactory->create($fixtureSplInfo, 84));
         $expected->add($message);
 
         $message = new Message('text.var.assign');
         $message->setDesc('The var %foo% should be assigned.');
-        $message->addSource($fileSourceFactory->create($fixtureSplInfo, 88));
+        $message->addSource($fileSourceFactory->create($fixtureSplInfo, 90));
         $expected->add($message);
 
         $this->assertEquals($expected, $catalogue);

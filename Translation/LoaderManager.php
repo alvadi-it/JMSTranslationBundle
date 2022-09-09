@@ -27,7 +27,7 @@ use JMS\TranslationBundle\Util\FileUtils;
 
 class LoaderManager
 {
-    private $loaders;
+    private array $loaders;
 
     /**
      * @param array $loaders
@@ -85,7 +85,7 @@ class LoaderManager
      *
      * @throws \InvalidArgumentException
      */
-    protected function getLoader($format)
+    protected function getLoader(string $format): LoaderInterface
     {
         if (!isset($this->loaders[$format])) {
             throw new InvalidArgumentException(sprintf('The format "%s" does not exist.', $format));

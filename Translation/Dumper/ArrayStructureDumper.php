@@ -25,12 +25,9 @@ use JMS\TranslationBundle\Model\MessageCatalogue;
 
 abstract class ArrayStructureDumper implements DumperInterface
 {
-    /**
-     * @var bool
-     */
-    private $prettyPrint = true;
+    private bool $prettyPrint = true;
 
-    public function setPrettyPrint($bool)
+    public function setPrettyPrint($bool): void
     {
         $this->prettyPrint = (bool) $bool;
     }
@@ -41,7 +38,7 @@ abstract class ArrayStructureDumper implements DumperInterface
      *
      * @return string
      */
-    public function dump(MessageCatalogue $catalogue, $domain = 'messages')
+    public function dump(MessageCatalogue $catalogue, $domain = 'messages'): string
     {
         $structure = $catalogue->getDomain($domain)->all();
 
@@ -89,5 +86,5 @@ abstract class ArrayStructureDumper implements DumperInterface
      *
      * @return string
      */
-    abstract protected function dumpStructure(array $structure);
+    abstract protected function dumpStructure(array $structure): string;
 }

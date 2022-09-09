@@ -30,7 +30,7 @@ use JMS\TranslationBundle\Exception\RuntimeException;
 final class Meaning
 {
     /** @var string @Required */
-    public $text;
+    public mixed $text;
 
     public function __construct()
     {

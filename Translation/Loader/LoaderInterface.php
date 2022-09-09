@@ -29,18 +29,5 @@ use JMS\TranslationBundle\Model\MessageCatalogue;
  */
 interface LoaderInterface
 {
-    /**
-     * Loads a MessageCatalogue from the file.
-     *
-     * The difference to Symfony's interface is that any loader is
-     * expected to return the MessageCatalogue from the bundle which
-     * contains more translation information.
-     *
-     * @param mixed  $resource
-     * @param string $locale
-     * @param string $domain
-     *
-     * @return MessageCatalogue
-     */
-    public function load($resource, $locale, $domain = 'messages');
+    public function load(mixed $resource, string $locale, string $domain = 'messages'): MessageCatalogue;
 }

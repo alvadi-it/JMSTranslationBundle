@@ -25,7 +25,7 @@ use JMS\TranslationBundle\Translation\TranslationContainerInterface;
 
 class FormModel implements TranslationContainerInterface
 {
-    public static function getTranslationMessages()
+    public static function getTranslationMessages(): array
     {
         return [
             new Message('form.foo'),

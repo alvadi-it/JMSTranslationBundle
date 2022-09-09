@@ -20,6 +20,7 @@ declare(strict_types=1);
 
 namespace JMS\TranslationBundle\Translation\Extractor\File;
 
+use Doctrine\Common\Annotations\AnnotationException;
 use Doctrine\Common\Annotations\DocParser;
 use JMS\TranslationBundle\Annotation\Desc;
 use JMS\TranslationBundle\Annotation\Ignore;
@@ -50,44 +51,44 @@ class DefaultPhpFileExtractor implements LoggerAwareInterface, FileVisitorInterf
     /**
      * @var FileSourceFactory
      */
-    private $fileSourceFactory;
+    private FileSourceFactory $fileSourceFactory;
 
     /**
      * @var NodeTraverser
      */
-    private $traverser;
+    private NodeTraverser $traverser;
 
     /**
      * @var MessageCatalogue
      */
-    private $catalogue;
+    private MessageCatalogue $catalogue;
 
     /**
      * @var \SplFileInfo
      */
-    private $file;
+    private \SplFileInfo $file;
 
     /**
      * @var DocParser
      */
-    private $docParser;
+    private DocParser $docParser;
 
     /**
      * @var LoggerInterface
      */
-    private $logger;
+    private LoggerInterface $logger;
 
     /**
      * @var Node
      */
-    private $previousNode;
+    private Node $previousNode;
 
     /**
      * Methods and "domain" parameter offset to extract from PHP code
      *
      * @var array method => position of the "domain" parameter
      */
-    protected $methodsToExtractFrom = [
+    protected array $methodsToExtractFrom = [
         'trans' => 2,
         'transchoice' => 3,
     ];
@@ -100,7 +101,7 @@ class DefaultPhpFileExtractor implements LoggerAwareInterface, FileVisitorInterf
         $this->traverser->addVisitor($this);
     }
 
-    public function setLogger(LoggerInterface $logger)
+    public function setLogger(LoggerInterface $logger): void
     {
         $this->logger = $logger;
     }
@@ -109,8 +110,10 @@ class DefaultPhpFileExtractor implements LoggerAwareInterface, FileVisitorInterf
      * @param Node $node
      *
      * @return void
+     * @throws AnnotationException
+     * @throws \ReflectionException
      */
-    public function enterNode(Node $node)
+    public function enterNode(Node $node): void
     {
         $methodCallNodeName = null;
         if ($node instanceof Node\Expr\MethodCall) {
@@ -128,9 +131,6 @@ class DefaultPhpFileExtractor implements LoggerAwareInterface, FileVisitorInterf
         $ignore = false;
         $desc = $meaning = null;
         if (null !== $docComment = $this->getDocCommentForNode($node)) {
-            if ($docComment instanceof Doc) {
-                $docComment = $docComment->getText();
-            }
             foreach ($this->docParser->parse($docComment, 'file ' . $this->file . ' near line ' . $node->getLine()) as $annot) {
                 if ($annot instanceof Ignore) {
                     $ignore = true;
@@ -149,13 +149,9 @@ class DefaultPhpFileExtractor implements LoggerAwareInterface, FileVisitorInterf
 
             $message = sprintf('Can only extract the translation id from a scalar string, but got "%s". Please refactor your code to make it extractable, or add the doc comment /** @Ignore */ to this code element (in %s on line %d).', get_class($node->args[0]->value), $this->file, $node->args[0]->value->getLine());
 
-            if ($this->logger) {
-                $this->logger->error($message);
+            $this->logger->error($message);
 
-                return;
-            }
-
-            throw new RuntimeException($message);
+            return;
         }
 
         $id = $node->args[0]->value->value;
@@ -173,13 +169,9 @@ class DefaultPhpFileExtractor implements LoggerAwareInterface, FileVisitorInterf
 
                 $message = sprintf('Can only extract the translation domain from a scalar string, but got "%s". Please refactor your code to make it extractable, or add the doc comment /** @Ignore */ to this code element (in %s on line %d).', get_class($node->args[$index]->value), $this->file, $node->args[$index]->value->getLine());
 
-                if ($this->logger) {
-                    $this->logger->error($message);
+                $this->logger->error($message);
 
-                    return;
-                }
-
-                throw new RuntimeException($message);
+                return;
             }
         } else {
             $domain = 'messages';
@@ -197,7 +189,7 @@ class DefaultPhpFileExtractor implements LoggerAwareInterface, FileVisitorInterf
      * @param MessageCatalogue $catalogue
      * @param array $ast
      */
-    public function visitPhpFile(\SplFileInfo $file, MessageCatalogue $catalogue, array $ast)
+    public function visitPhpFile(\SplFileInfo $file, MessageCatalogue $catalogue, array $ast): void
     {
         $this->file = $file;
         $this->catalogue = $catalogue;
@@ -209,7 +201,7 @@ class DefaultPhpFileExtractor implements LoggerAwareInterface, FileVisitorInterf
      *
      * @return void
      */
-    public function beforeTraverse(array $nodes)
+    public function beforeTraverse(array $nodes): void
     {
     }
 
@@ -218,7 +210,7 @@ class DefaultPhpFileExtractor implements LoggerAwareInterface, FileVisitorInterf
      *
      * @return void
      */
-    public function leaveNode(Node $node)
+    public function leaveNode(Node $node): void
     {
     }
 
@@ -227,15 +219,15 @@ class DefaultPhpFileExtractor implements LoggerAwareInterface, FileVisitorInterf
      *
      * @return void
      */
-    public function afterTraverse(array $nodes)
+    public function afterTraverse(array $nodes): void
     {
     }
 
-    public function visitFile(\SplFileInfo $file, MessageCatalogue $catalogue)
+    public function visitFile(\SplFileInfo $file, MessageCatalogue $catalogue): void
     {
     }
 
-    public function visitTwigFile(\SplFileInfo $file, MessageCatalogue $catalogue, TwigNode $ast)
+    public function visitTwigFile(\SplFileInfo $file, MessageCatalogue $catalogue, TwigNode $ast): void
     {
     }
 
@@ -244,7 +236,7 @@ class DefaultPhpFileExtractor implements LoggerAwareInterface, FileVisitorInterf
      *
      * @return string|null
      */
-    private function getDocCommentForNode(Node $node)
+    private function getDocCommentForNode(Node $node): ?string
     {
         // check if there is a doc comment for the ID argument
         // ->trans(/** @Desc("FOO") */ 'my.id')
@@ -258,10 +250,12 @@ class DefaultPhpFileExtractor implements LoggerAwareInterface, FileVisitorInterf
         // /** @Desc("FOO") */ $translator->trans('my.id')
         if (null !== $comment = $node->getDocComment()) {
             return $comment->getText();
-        } elseif (null !== $this->previousNode && $this->previousNode->getDocComment() !== null) {
+        }
+
+        if (null !== $this->previousNode && $this->previousNode->getDocComment() !== null) {
             $comment = $this->previousNode->getDocComment();
 
-            return is_object($comment) ? $comment->getText() : $comment;
+            return is_object($comment) ? $comment?->getText() : $comment;
         }
 
         return null;

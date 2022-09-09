@@ -25,67 +25,64 @@ final class ConfigBuilder
     /**
      * @var string Path to translation directory
      */
-    private $translationsDir;
+    private string $translationsDir;
 
     /**
      * @var string
      */
-    private $locale;
+    private string $locale;
 
     /**
      * @var array
      */
-    private $ignoredDomains = [];
+    private array $ignoredDomains = [];
 
     /**
      * @var array
      */
-    private $domains = [];
+    private array $domains = [];
+
+    private ?string $outputFormat = null;
 
     /**
      * @var string
      */
-    private $outputFormat;
-
-    /**
-     * @var string
-     */
-    private $defaultOutputFormat = 'xlf';
+    private string $defaultOutputFormat = 'xlf';
 
     /**
      * @var bool
      */
-    private $useIcuMessageFormat = false;
+    private bool $useIcuMessageFormat = false;
 
     /**
      * @var array
      */
-    private $scanDirs = [];
+    private array $scanDirs = [];
 
     /**
      * @var array
      */
-    private $excludedDirs = ['Tests'];
+    private array $excludedDirs = ['Tests'];
 
     /**
      * @var array
      */
-    private $excludedNames = ['*Test.php', '*TestCase.php'];
+    private array $excludedNames = ['*Test.php', '*TestCase.php'];
 
     /**
      * @var array
      */
-    private $enabledExtractors = [];
+    private array $enabledExtractors = [];
 
     /**
      * @var bool
      */
-    private $keepOldTranslations = false;
+    private bool $keepOldTranslations = false;
 
     /**
      * @var array
      */
-    private $loadResources = [];
+    private array $loadResources = [];
 
     /**
      * @param Config $config
@@ -94,7 +91,7 @@ final class ConfigBuilder
      *
      * @static
      */
-    public static function fromConfig(Config $config)
+    public static function fromConfig(Config $config): ConfigBuilder
     {
         $builder = new self();
         $builder->setTranslationsDir($config->getTranslationsDir());
@@ -124,7 +121,7 @@ final class ConfigBuilder
      *
      * @return $this
      */
-    public function setDefaultOutputFormat($format)
+    public function setDefaultOutputFormat(string $format): ConfigBuilder
     {
         $this->defaultOutputFormat = $format;
 
@@ -138,11 +135,11 @@ final class ConfigBuilder
      * files have a different format. This will also cause input files of
      * another format to be deleted.
      *
-     * @param string $format
+     * @param string|null $format
      *
      * @return $this
      */
-    public function setOutputFormat($format)
+    public function setOutputFormat(?string $format = null): ConfigBuilder
     {
         $this->outputFormat = $format;
 
@@ -159,7 +156,7 @@ final class ConfigBuilder
      *
      * @return $this
      */
-    public function setUseIcuMessageFormat($useIcuMessageFormat)
+    public function setUseIcuMessageFormat(bool $useIcuMessageFormat): ConfigBuilder
     {
         $this->useIcuMessageFormat = $useIcuMessageFormat;
 
@@ -176,7 +173,7 @@ final class ConfigBuilder
      *
      * @return $this
      */
-    public function setIgnoredDomains(array $domains)
+    public function setIgnoredDomains(array $domains): ConfigBuilder
     {
         $this->ignoredDomains = $domains;
 
@@ -188,7 +185,7 @@ final class ConfigBuilder
      *
      * @return $this
      */
-    public function addIgnoredDomain($domain)
+    public function addIgnoredDomain(string $domain): ConfigBuilder
     {
         $this->ignoredDomains[$domain] = true;
 
@@ -200,7 +197,7 @@ final class ConfigBuilder
      *
      * @return $this
      */
-    public function setDomains(array $domains)
+    public function setDomains(array $domains): ConfigBuilder
     {
         $this->domains = $domains;
 
@@ -212,7 +209,7 @@ final class ConfigBuilder
      *
      * @return $this
      */
-    public function addDomain($domain)
+    public function addDomain(string $domain): ConfigBuilder
     {
         $this->domains[$domain] = true;
 
@@ -224,7 +221,7 @@ final class ConfigBuilder
      *
      * @return $this
      */
-    public function setLocale($locale)
+    public function setLocale(string $locale): ConfigBuilder
     {
         $this->locale = $locale;
 
@@ -236,7 +233,7 @@ final class ConfigBuilder
      *
      * @return $this
      */
-    public function setTranslationsDir($dir)
+    public function setTranslationsDir(string $dir): ConfigBuilder
     {
         $this->translationsDir = $dir;
 
@@ -248,7 +245,7 @@ final class ConfigBuilder
      *
      * @return $this
      */
-    public function setScanDirs(array $dirs)
+    public function setScanDirs(array $dirs): ConfigBuilder
     {
         $this->scanDirs = $dirs;
 
@@ -260,7 +257,7 @@ final class ConfigBuilder
      *
      * @return $this
      */
-    public function setExcludedDirs(array $dirs)
+    public function setExcludedDirs(array $dirs): ConfigBuilder
     {
         $this->excludedDirs = $dirs;
 
@@ -272,7 +269,7 @@ final class ConfigBuilder
      *
      * @return $this
      */
-    public function setExcludedNames(array $names)
+    public function setExcludedNames(array $names): ConfigBuilder
     {
         $this->excludedNames = $names;
 
@@ -284,7 +281,7 @@ final class ConfigBuilder
      *
      * @return $this
      */
-    public function setEnabledExtractors(array $aliases)
+    public function setEnabledExtractors(array $aliases): ConfigBuilder
     {
         $this->enabledExtractors = $aliases;
 
@@ -296,7 +293,7 @@ final class ConfigBuilder
      *
      * @return $this
      */
-    public function enableExtractor($alias)
+    public function enableExtractor(string $alias): ConfigBuilder
     {
         $this->enabledExtractors[$alias] = true;
 
@@ -308,7 +305,7 @@ final class ConfigBuilder
      *
      * @return $this
      */
-    public function disableExtractor($alias)
+    public function disableExtractor(string $alias): ConfigBuilder
     {
         unset($this->enabledExtractors[$alias]);
 
@@ -320,7 +317,7 @@ final class ConfigBuilder
      *
      * @return $this
      */
-    public function setKeepOldTranslations($value)
+    public function setKeepOldTranslations(bool $value): ConfigBuilder
     {
         $this->keepOldTranslations = $value;
 
@@ -330,7 +327,7 @@ final class ConfigBuilder
     /**
      * @return Config
      */
-    public function getConfig()
+    public function getConfig(): Config
     {
         return new Config(
             $this->translationsDir,
@@ -354,7 +351,7 @@ final class ConfigBuilder
      *
      * @return $this
      */
-    public function setLoadResources(array $loadResources)
+    public function setLoadResources(array $loadResources): ConfigBuilder
     {
         $this->loadResources = $loadResources;
 

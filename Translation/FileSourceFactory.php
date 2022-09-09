@@ -29,17 +29,18 @@ class FileSourceFactory
      *
      * @var string
      */
-    protected $kernelRoot;
+    protected string $kernelRoot;
 
     /**
      * @var string
      */
-    protected $baseDir;
+    protected string $baseDir;
 
     /**
      * @param string $kernelRoot
+     * @param string|null $baseDir
      */
-    public function __construct($kernelRoot, ?string $baseDir = null)
+    public function __construct(string $kernelRoot, ?string $baseDir = null)
     {
         $this->kernelRoot = $kernelRoot;
         $this->baseDir = $baseDir ?? $kernelRoot;
@@ -54,7 +55,7 @@ class FileSourceFactory
      *
      * @return FileSource
      */
-    public function create(\SplFileInfo $file, $line = null, $column = null)
+    public function create(\SplFileInfo $file, int $line = null, int $column = null): FileSource
     {
         return new FileSource($this->getRelativePath((string) $file), $line, $column);
     }
@@ -64,9 +65,9 @@ class FileSourceFactory
      *
      * @return string
      */
-    private function getRelativePath($path)
+    private function getRelativePath(string $path): string
     {
-        if (0 === strpos($path, $this->baseDir)) {
+        if (str_starts_with($path, $this->baseDir)) {
             return substr($path, strlen($this->baseDir));
         }
 

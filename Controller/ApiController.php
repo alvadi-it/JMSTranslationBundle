@@ -38,12 +38,12 @@ class ApiController
     /**
      * @var ConfigFactory
      */
-    private $configFactory;
+    private ConfigFactory $configFactory;
 
     /**
      * @var Updater
      */
-    private $updater;
+    private Updater $updater;
 
     public function __construct(ConfigFactory $configFactory, Updater $updater)
     {
@@ -65,7 +65,7 @@ class ApiController
      *            defaults = {"id" = null},
      *            options = {"i18n" = false})
      */
-    public function updateMessageAction(Request $request, $config, $domain, $locale)
+    public function updateMessageAction(Request $request, string $config, string $domain, string $locale): Response
     {
         $id = $request->query->get('id');
 

@@ -28,7 +28,7 @@ use JMS\TranslationBundle\Translation\Dumper\XliffDumper;
 
 class XliffDumperTest extends BaseDumperTest
 {
-    public function testCdataOutput()
+    public function testCdataOutput(): void
     {
         $dumper = $this->getDumper();
 
@@ -52,10 +52,10 @@ class XliffDumperTest extends BaseDumperTest
 </xliff>
 
 EOF;
-        $this->assertEquals($expected, $dumper->dump($catalogue, 'messages'));
+        $this->assertEquals($expected, preg_replace("/\n/", "\r\n", $dumper->dump($catalogue)));
     }
 
-    public function testPreserveWhitespaceOutput()
+    public function testPreserveWhitespaceOutput(): void
     {
         $dumper = $this->getDumper();
 
@@ -82,42 +82,42 @@ translation</target>
 </xliff>
 
 EOF;
-        $this->assertEquals($expected, $dumper->dump($catalogue, 'messages'));
+        $this->assertEquals($expected, preg_replace("/\n/", "\r\n", $dumper->dump($catalogue)));
     }
 
-    public function testDumpStructureFullPaths()
+    public function testDumpStructureFullPaths(): void
     {
         $dumper = $this->getDumper();
 
         $catalogue = $this->getStructureCatalogue();
 
-        $this->assertEquals($this->getOutput('structure_full_path'), $dumper->dump($catalogue, 'messages'));
+        $this->assertEquals($this->getOutput('structure_full_path'), preg_replace("/\n/", "\r\n", $dumper->dump($catalogue)));
     }
 
     /**
      * * Test the fact that the references positions are not in the dumped xliff
      */
-    public function testDumpStructureWithoutReferencePosition()
+    public function testDumpStructureWithoutReferencePosition(): void
     {
         $dumper = $this->getDumper();
         $dumper->setAddReferencePosition(false);
 
         $catalogue = $this->getStructureCatalogue();
 
-        $this->assertEquals($this->getOutput('structure_without_reference_position'), $dumper->dump($catalogue, 'messages'));
+        $this->assertEquals($this->getOutput('structure_without_reference_position'), preg_replace("/\n/", "\r\n", $dumper->dump($catalogue)));
     }
 
     /**
      * Test the fact that the references are not in the dumped xliff
      */
-    public function testDumpStructureWithoutReference()
+    public function testDumpStructureWithoutReference(): void
     {
         $dumper = $this->getDumper();
         $dumper->setAddReference(false);
 
         $catalogue = $this->getStructureCatalogue();
 
-        $this->assertEquals($this->getOutput('structure_without_reference'), $dumper->dump($catalogue, 'messages'));
+        $this->assertEquals($this->getOutput('structure_without_reference'), preg_replace("/\n/", "\r\n", $dumper->dump($catalogue)));
     }
 
     /**
@@ -125,7 +125,7 @@ EOF;
      *
      * @return MessageCatalogue
      */
-    protected function getStructureCatalogue()
+    protected function getStructureCatalogue(): MessageCatalogue
     {
         $catalogue = new MessageCatalogue();
         $catalogue->setLocale('en');
@@ -141,7 +141,7 @@ EOF;
         return $catalogue;
     }
 
-    protected function getDumper()
+    protected function getDumper(): XliffDumper
     {
         $dumper = new XliffDumper();
         $dumper->setAddDate(false);
@@ -149,7 +149,7 @@ EOF;
         return $dumper;
     }
 
-    protected function getOutput($key)
+    protected function getOutput($key): bool|string
     {
         $fileRealPath = __DIR__ . '/xliff/' . $key . '.xml';
         if (! is_file($fileRealPath)) {

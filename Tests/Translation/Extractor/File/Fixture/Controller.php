@@ -20,8 +20,10 @@ declare(strict_types=1);
 
 namespace JMS\TranslationBundle\Tests\Translation\Extractor\File\Fixture;
 
-use Symfony\Component\HttpFoundation\Session;
-use Symfony\Component\Translation\TranslatorInterface;
+use JMS\TranslationBundle\Annotation\Desc;
+use JMS\TranslationBundle\Annotation\Ignore;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * This is a sample controller class.
@@ -33,8 +35,8 @@ use Symfony\Component\Translation\TranslatorInterface;
  */
 class Controller
 {
-    private $translator;
-    private $session;
+    private TranslatorInterface $translator;
+    private Session $session;
 
     public function __construct(TranslatorInterface $translator, Session $session)
     {
@@ -42,47 +44,47 @@ class Controller
         $this->session    = $session;
     }
 
-    public function indexAction()
+    public function indexAction(): void
     {
-        $this->session->setFlash('foo', $this->translator->trans(/** @Desc("Foo bar") */ 'text.foo_bar'));
+        $this->session->getFlashBag()('foo', $this->translator->trans(/** @Desc("Foo bar") */ 'text.foo_bar'));
     }
 
-    public function welcomeAction()
+    public function welcomeAction(): void
     {
-        $this->session->setFlash(
+        $this->session->getFlashBag()(
             'bar',
             /** @Desc("Welcome %name%! Thanks for signing up.") */
             $this->translator->trans('text.sign_up_successful', ['name' => 'Johannes'])
         );
     }
 
-    public function foobarAction()
+    public function foobarAction(): void
     {
-        $this->session->setFlash(
+        $this->session->getFlashBag()(
             'archive',
             /** @Desc("Archive Message") @Meaning("The verb (to archive), describes an action") */
             $this->translator->trans('button.archive')
         );
     }
 
-    public function nonExtractableButIgnoredAction()
+    public function nonExtractableButIgnoredAction(): void
     {
         /** @Ignore */ $this->translator->trans($foo);
         /** Foobar */
         /** @Ignore */ $this->translator->trans('foo', [], $baz);
     }
 
-    public function irrelevantDocComment()
+    public function irrelevantDocComment(): void
     {
         /** @Foo @Bar */ $this->translator->trans('text.irrelevant_doc_comment', [], 'baz');
     }
 
-    public function arrayAccess()
+    public function arrayAccess(): void
     {
         $arr['foo']->trans('text.array_method_call');
     }
 
-    public function assignToVar()
+    public function assignToVar(): string
     {
         /** @Desc("The var %foo% should be assigned.") */
         return $this->translator->trans('text.var.assign', ['%foo%' => 'fooVar']);

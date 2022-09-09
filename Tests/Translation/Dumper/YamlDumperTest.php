@@ -27,7 +27,7 @@ use JMS\TranslationBundle\Translation\Dumper\YamlDumper;
 
 class YamlDumperTest extends BaseDumperTest
 {
-    public function testDumpStructureWithoutPrettyPrint()
+    public function testDumpStructureWithoutPrettyPrint(): void
     {
         $catalogue = new MessageCatalogue();
         $catalogue->setLocale('fr');
@@ -36,15 +36,15 @@ class YamlDumperTest extends BaseDumperTest
         $dumper = new YamlDumper();
         $dumper->setPrettyPrint(false);
 
-        $this->assertEquals($this->getOutput('structure_wo_pretty_print'), $dumper->dump($catalogue, 'messages'));
+        $this->assertEquals($this->getOutput('structure_wo_pretty_print'), preg_replace("/\n/", "\r\n", $dumper->dump($catalogue)));
     }
 
-    protected function getDumper()
+    protected function getDumper(): YamlDumper
     {
         return new YamlDumper();
     }
 
-    protected function getOutput($key)
+    protected function getOutput($key): bool|string
     {
         $fileRealPath = __DIR__ . '/yml/' . $key . '.yml';
         if (! is_file($fileRealPath)) {

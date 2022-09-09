@@ -25,38 +25,18 @@ namespace JMS\TranslationBundle\Twig;
  *
  * @author Johannes M. Schmitt <schmittjoh@gmail.com>
  */
-use Symfony\Component\Translation\TranslatorInterface as LegacyTranslatorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 
 class TranslationExtension extends AbstractExtension
 {
-    /**
-     * @var TranslatorInterface|LegacyTranslatorInterface
-     */
-    private $translator;
+    private TranslatorInterface $translator;
 
-    /**
-     * @var bool
-     */
-    private $debug;
+    private bool $debug;
 
-    /**
-     * @param TranslatorInterface|LegacyTranslatorInterface $translator
-     * @param bool $debug
-     */
-    public function __construct($translator, $debug = false)
+    public function __construct(TranslatorInterface $translator, $debug = false)
     {
-        if (!$translator instanceof LegacyTranslatorInterface && !$translator instanceof TranslatorInterface) {
-            throw new \InvalidArgumentException(sprintf(
-                'Argument 1 must be an instance of %s or %s, instance of %s given',
-                TranslatorInterface::class,
-                LegacyTranslatorInterface::class,
-                get_class($translator)
-            ));
-        }
-
         $this->translator = $translator;
         $this->debug = $debug;
     }
@@ -64,7 +44,7 @@ class TranslationExtension extends AbstractExtension
     /**
      * @return array
      */
-    public function getNodeVisitors()
+    public function getNodeVisitors(): array
     {
         $visitors = [
             new NormalizingNodeVisitor(),
@@ -81,7 +61,7 @@ class TranslationExtension extends AbstractExtension
     /**
      * @return array
      */
-    public function getFilters()
+    public function getFilters(): array
     {
         return [
             new TwigFilter('desc', [$this, 'desc']),
@@ -99,7 +79,7 @@ class TranslationExtension extends AbstractExtension
      *
      * @return string
      */
-    public function transchoiceWithDefault($message, $defaultMessage, $count, array $arguments = [], $domain = null, $locale = null)
+    public function transchoiceWithDefault($message, $defaultMessage, $count, array $arguments = [], $domain = null, $locale = null): string
     {
         if (null === $domain) {
             $domain = 'messages';
@@ -112,12 +92,8 @@ class TranslationExtension extends AbstractExtension
         return $this->doTransChoice($message, $count, array_merge(['%count%' => $count], $arguments), $domain, $locale);
     }
 
-    private function doTransChoice($message, $count, array $arguments, $domain, $locale)
+    private function doTransChoice($message, $count, array $arguments, $domain, $locale): string
     {
-        if ($this->translator instanceof LegacyTranslatorInterface) {
-            return $this->translator->transChoice($message, $count, array_merge(['%count%' => $count], $arguments), $domain, $locale);
-        }
-
         return $this->translator->trans($message, array_merge(['%count%' => $count], $arguments), $domain, $locale);
     }
 
@@ -126,7 +102,7 @@ class TranslationExtension extends AbstractExtension
      *
      * @return mixed
      */
-    public function desc($v)
+    public function desc($v): mixed
     {
         return $v;
     }
@@ -136,7 +112,7 @@ class TranslationExtension extends AbstractExtension
      *
      * @return mixed
      */
-    public function meaning($v)
+    public function meaning($v): mixed
     {
         return $v;
     }
@@ -144,7 +120,7 @@ class TranslationExtension extends AbstractExtension
     /**
      * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return 'jms_translation';
     }

@@ -28,11 +28,11 @@ use Psr\Log\LoggerInterface;
 
 class ExtractorManager implements ExtractorInterface
 {
-    private $fileExtractor;
-    private $customExtractors;
-    private $directories = [];
-    private $enabledExtractors = [];
-    private $logger;
+    private FileExtractor $fileExtractor;
+    private array $customExtractors;
+    private array $directories = [];
+    private array $enabledExtractors = [];
+    private LoggerInterface $logger;
 
     /**
      * @param Extractor\FileExtractor $extractor
@@ -46,14 +46,14 @@ class ExtractorManager implements ExtractorInterface
         $this->logger = $logger;
     }
 
-    public function reset()
+    public function reset(): void
     {
         $this->directories       = [];
         $this->enabledExtractors = [];
         $this->fileExtractor->reset();
     }
 
-    public function setLogger(LoggerInterface $logger)
+    public function setLogger(LoggerInterface $logger): void
     {
         $this->logger = $logger;
         $this->fileExtractor->setLogger($logger);
@@ -70,7 +70,7 @@ class ExtractorManager implements ExtractorInterface
     /**
      * @param array $directories
      */
-    public function setDirectories(array $directories)
+    public function setDirectories(array $directories): void
     {
         $this->directories = [];
 
@@ -84,7 +84,7 @@ class ExtractorManager implements ExtractorInterface
      *
      * @throws InvalidArgumentException
      */
-    public function addDirectory($directory)
+    public function addDirectory(string $directory): void
     {
         if (!is_dir($directory)) {
             throw new InvalidArgumentException(sprintf('The directory "%s" does not exist.', $directory));
@@ -96,7 +96,7 @@ class ExtractorManager implements ExtractorInterface
     /**
      * @param array $dirs
      */
-    public function setExcludedDirs(array $dirs)
+    public function setExcludedDirs(array $dirs): void
     {
         $this->fileExtractor->setExcludedDirs($dirs);
     }
@@ -104,7 +104,7 @@ class ExtractorManager implements ExtractorInterface
     /**
      * @param array $names
      */
-    public function setExcludedNames(array $names)
+    public function setExcludedNames(array $names): void
     {
         $this->fileExtractor->setExcludedNames($names);
     }
@@ -114,7 +114,7 @@ class ExtractorManager implements ExtractorInterface
      *
      * @throws InvalidArgumentException
      */
-    public function setEnabledExtractors(array $aliases)
+    public function setEnabledExtractors(array $aliases): void
     {
         foreach ($aliases as $alias => $true) {
             if (!isset($this->customExtractors[$alias])) {
@@ -127,8 +127,9 @@ class ExtractorManager implements ExtractorInterface
 
     /**
      * @return MessageCatalogue
+     * @throws \Throwable
      */
-    public function extract()
+    public function extract(): MessageCatalogue
     {
         $catalogue = new MessageCatalogue();
 

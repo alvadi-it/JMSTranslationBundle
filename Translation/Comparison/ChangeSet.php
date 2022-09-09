@@ -25,12 +25,12 @@ class ChangeSet
     /**
      * @var array
      */
-    private $addedMessages;
+    private array $addedMessages;
 
     /**
      * @var array
      */
-    private $deletedMessages;
+    private array $deletedMessages;
 
     /**
      * @param array $addedMessages
@@ -45,7 +45,7 @@ class ChangeSet
     /**
      * @return array
      */
-    public function getAddedMessages()
+    public function getAddedMessages(): array
     {
         return $this->addedMessages;
     }
@@ -53,7 +53,7 @@ class ChangeSet
     /**
      * @return array
      */
-    public function getDeletedMessages()
+    public function getDeletedMessages(): array
     {
         return $this->deletedMessages;
     }

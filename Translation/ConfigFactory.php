@@ -27,7 +27,7 @@ class ConfigFactory
     /**
      * @var array
      */
-    private $builders;
+    private array $builders;
 
     /**
      * @param array $builders ConfigBuilder
@@ -40,7 +40,7 @@ class ConfigFactory
     /**
      * @return array of strings
      */
-    public function getNames()
+    public function getNames(): array
     {
         return array_keys($this->builders);
     }
@@ -52,7 +52,7 @@ class ConfigFactory
      *
      * @throws InvalidArgumentException
      */
-    public function getBuilder($name)
+    public function getBuilder(string $name): ConfigBuilder
     {
         if (!isset($this->builders[$name])) {
             throw new InvalidArgumentException(sprintf('There has no extraction config with name "%s" been configured. Available configs: %s', $name, implode(', ', array_keys($this->builders))));
@@ -67,7 +67,7 @@ class ConfigFactory
      *
      * @return Config
      */
-    public function getConfig($name, $locale)
+    public function getConfig(string $name, string $locale): Config
     {
         return $this->getBuilder($name)->setLocale($locale)->getConfig();
     }
@@ -76,7 +76,7 @@ class ConfigFactory
      * @param string $name
      * @param ConfigBuilder $builder
      */
-    public function addBuilder($name, $builder)
+    public function addBuilder(string $name, ConfigBuilder $builder): void
     {
         $this->builders[$name] = $builder;
     }

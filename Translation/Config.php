@@ -35,92 +35,73 @@ final class Config
     /**
      * @var string
      */
-    private $translationsDir;
+    private string $translationsDir;
 
     /**
      * @var string
      */
-    private $locale;
+    private string $locale;
 
     /**
      * @var array
      */
-    private $ignoredDomains;
+    private array $ignoredDomains;
 
     /**
      * @var array
      */
-    private $domains;
+    private array $domains;
+
+    private ?string $outputFormat = null;
 
     /**
      * @var string
      */
-    private $outputFormat;
-
-    /**
-     * @var string
-     */
-    private $defaultOutputFormat;
+    private string $defaultOutputFormat;
 
     /**
      * @var bool
      */
-    private $useIcuMessageFormat;
+    private bool $useIcuMessageFormat;
 
     /**
      * @var array
      */
-    private $scanDirs;
+    private array $scanDirs;
 
     /**
      * @var array
      */
-    private $excludedDirs;
+    private array $excludedDirs;
 
     /**
      * @var array
      */
-    private $excludedNames;
+    private array $excludedNames;
 
     /**
      * @var array
      */
-    private $enabledExtractors;
+    private array $enabledExtractors;
 
     /**
      * @var bool
      */
-    private $keepOldMessages;
+    private bool $keepOldMessages;
 
     /**
      * @var array
      */
-    private $loadResources;
+    private array $loadResources;
 
-    /**
-     * @param string $translationsDir
-     * @param string $locale
-     * @param array $ignoredDomains
-     * @param array $domains
-     * @param string $outputFormat
-     * @param string $defaultOutputFormat
-     * @param array $scanDirs
-     * @param array $excludedDirs
-     * @param array $excludedNames
-     * @param array $enabledExtractors
-     * @param bool $keepOldMessages
-     * @param array $loadResources
-     */
-    public function __construct($translationsDir, $locale, array $ignoredDomains, array $domains, $outputFormat, $defaultOutputFormat, $useIcuMessageFormat, array $scanDirs, array $excludedDirs, array $excludedNames, array $enabledExtractors, $keepOldMessages, array $loadResources)
+    public function __construct(string $translationsDir, string $locale, array $ignoredDomains, array $domains, ?string $outputFormat, string $defaultOutputFormat, bool $useIcuMessageFormat, array $scanDirs, array $excludedDirs, array $excludedNames, array $enabledExtractors, bool $keepOldMessages, array $loadResources)
     {
         if (empty($translationsDir)) {
             throw new InvalidArgumentException('The directory where translations are must be set.');
         }
 
-        if (!is_dir($translationsDir)) {
-            if (false === @mkdir($translationsDir, 0777, true)) {
-                throw new RuntimeException(sprintf('The translations directory "%s" could not be created.', $translationsDir));
-            }
+        if (!is_dir($translationsDir) && !mkdir($translationsDir, 0777, true) && !is_dir($translationsDir)) {
+            throw new RuntimeException(sprintf('The translations directory "%s" could not be created.', $translationsDir));
         }
 
         if (empty($scanDirs)) {
@@ -157,7 +138,7 @@ final class Config
     /**
      * @return string
      */
-    public function getTranslationsDir()
+    public function getTranslationsDir(): string
     {
         return $this->translationsDir;
     }
@@ -167,7 +148,7 @@ final class Config
      *
      * @return bool
      */
-    public function isIgnoredDomain($domain)
+    public function isIgnoredDomain(string $domain): bool
     {
         return isset($this->ignoredDomains[$domain]);
     }
@@ -175,7 +156,7 @@ final class Config
     /**
      * @return array
      */
-    public function getIgnoredDomains()
+    public function getIgnoredDomains(): array
     {
         return $this->ignoredDomains;
     }
@@ -185,7 +166,7 @@ final class Config
      *
      * @return bool
      */
-    public function hasDomain($domain)
+    public function hasDomain($domain): bool
     {
         return isset($this->domains[$domain]);
     }
@@ -193,7 +174,7 @@ final class Config
     /**
      * @return bool
      */
-    public function hasDomains()
+    public function hasDomains(): bool
     {
         return count($this->domains) > 0;
     }
@@ -201,15 +182,12 @@ final class Config
     /**
      * @return array
      */
-    public function getDomains()
+    public function getDomains(): array
     {
         return $this->domains;
     }
 
-    /**
-     * @return string
-     */
-    public function getOutputFormat()
+    public function getOutputFormat(): ?string
     {
         return $this->outputFormat;
     }
@@ -217,7 +195,7 @@ final class Config
     /**
      * @return string
      */
-    public function getDefaultOutputFormat()
+    public function getDefaultOutputFormat(): string
     {
         return $this->defaultOutputFormat;
     }
@@ -225,15 +203,15 @@ final class Config
     /**
      * @return bool
      */
-    public function shouldUseIcuMessageFormat()
+    public function shouldUseIcuMessageFormat(): bool
     {
         return $this->useIcuMessageFormat;
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getLocale()
+    public function getLocale(): string
     {
         return $this->locale;
     }
@@ -241,7 +219,7 @@ final class Config
     /**
      * @return array
      */
-    public function getScanDirs()
+    public function getScanDirs(): array
     {
         return $this->scanDirs;
     }
@@ -249,7 +227,7 @@ final class Config
     /**
      * @return array
      */
-    public function getExcludedDirs()
+    public function getExcludedDirs(): array
     {
         return $this->excludedDirs;
     }
@@ -257,7 +235,7 @@ final class Config
     /**
      * @return array
      */
-    public function getExcludedNames()
+    public function getExcludedNames(): array
     {
         return $this->excludedNames;
     }
@@ -265,7 +243,7 @@ final class Config
     /**
      * @return array
      */
-    public function getEnabledExtractors()
+    public function getEnabledExtractors(): array
     {
         return $this->enabledExtractors;
     }
@@ -273,7 +251,7 @@ final class Config
     /**
      * @return bool
      */
-    public function isKeepOldMessages()
+    public function isKeepOldMessages(): bool
     {
         return $this->keepOldMessages;
     }
@@ -281,7 +259,7 @@ final class Config
     /**
      * @return array
      */
-    public function getLoadResources()
+    public function getLoadResources(): array
     {
         return $this->loadResources;
     }

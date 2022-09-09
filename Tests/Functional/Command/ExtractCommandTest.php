@@ -25,7 +25,7 @@ use Symfony\Component\Console\Input\ArgvInput;
 
 class ExtractCommandTest extends BaseCommandTestCase
 {
-    public function testExtract()
+    public function testExtract(): void
     {
         $input = new ArgvInput([
             'app/console',

@@ -40,7 +40,7 @@ class XliffLoaderTest extends TestCase
         $dumper = new XliffDumper();
         $dumper->setAddDate(false);
 
-        $this->assertStringEqualsFile($file, $dumper->dump($catalogue));
+        $this->assertStringEqualsFile($file, preg_replace("/\n/", "\r\n", $dumper->dump($catalogue)));
     }
 
     public function testLoadWithSymfonyFormat()

@@ -47,52 +47,52 @@ class FileExtractor implements ExtractorInterface, LoggerAwareInterface
     /**
      * @var Environment
      */
-    private $twig;
+    private Environment $twig;
 
     /**
      * @var array
      */
-    private $visitors;
+    private array $visitors = [];
 
     /**
      * @var Parser
      */
-    private $phpParser;
+    private Parser $phpParser;
 
     /**
      * @var array
      */
-    private $pattern;
+    private array $pattern = [];
 
     /**
      * @var string
      */
-    private $directory;
+    private string $directory;
 
     /**
      * @var RemovingNodeVisitor|NodeVisitorInterface
      */
-    private $removingTwigVisitor;
+    private RemovingNodeVisitor|NodeVisitorInterface $removingTwigVisitor;
 
     /**
      * @var DefaultApplyingNodeVisitor|RemovingNodeVisitor|NodeVisitorInterface
      */
-    private $defaultApplyingTwigVisitor;
+    private RemovingNodeVisitor|NodeVisitorInterface|DefaultApplyingNodeVisitor $defaultApplyingTwigVisitor;
 
     /**
      * @var array
      */
-    private $excludedNames = [];
+    private array $excludedNames = [];
 
     /**
      * @var array
      */
-    private $excludedDirs = [];
+    private array $excludedDirs = [];
 
     /**
      * @var LoggerInterface
      */
-    private $logger;
+    private LoggerInterface $logger;
 
     /**
      * @param Environment $twig
@@ -105,12 +105,8 @@ class FileExtractor implements ExtractorInterface, LoggerAwareInterface
         $this->visitors = $visitors;
         $this->setLogger($logger);
         $lexer = new Lexer();
-        if (class_exists(ParserFactory::class)) {
-            $factory = new ParserFactory();
-            $this->phpParser = $factory->create(ParserFactory::PREFER_PHP7, $lexer);
-        } else {
-            $this->phpParser = new Parser($lexer);
-        }
+        $factory = new ParserFactory();
+        $this->phpParser = $factory->create(ParserFactory::PREFER_PHP7, $lexer);
 
         foreach ($this->twig->getNodeVisitors() as $visitor) {
             if ($visitor instanceof RemovingNodeVisitor) {
@@ -122,13 +118,13 @@ class FileExtractor implements ExtractorInterface, LoggerAwareInterface
         }
     }
 
-    public function reset()
+    public function reset(): void
     {
         $this->excludedNames = [];
         $this->excludedDirs  = [];
     }
 
-    public function setLogger(LoggerInterface $logger)
+    public function setLogger(LoggerInterface $logger): void
     {
         $this->logger = $logger;
 
@@ -141,7 +137,7 @@ class FileExtractor implements ExtractorInterface, LoggerAwareInterface
         }
     }
 
-    public function setDirectory($directory)
+    public function setDirectory($directory): void
     {
         if (!is_dir($directory)) {
             throw new InvalidArgumentException(sprintf('The directory "%s" does not exist.', $directory));
@@ -153,7 +149,7 @@ class FileExtractor implements ExtractorInterface, LoggerAwareInterface
     /**
      * @param array $dirs
      */
-    public function setExcludedDirs(array $dirs)
+    public function setExcludedDirs(array $dirs): void
     {
         $this->excludedDirs = $dirs;
     }
@@ -161,7 +157,7 @@ class FileExtractor implements ExtractorInterface, LoggerAwareInterface
     /**
      * @param array $names
      */
-    public function setExcludedNames(array $names)
+    public function setExcludedNames(array $names): void
     {
         $this->excludedNames = $names;
     }
@@ -169,7 +165,7 @@ class FileExtractor implements ExtractorInterface, LoggerAwareInterface
     /**
      * @param array $pattern
      */
-    public function setPattern(array $pattern)
+    public function setPattern(array $pattern): void
     {
         $this->pattern = $pattern;
     }
@@ -177,9 +173,9 @@ class FileExtractor implements ExtractorInterface, LoggerAwareInterface
     /**
      * @return MessageCatalogue
      *
-     * @throws \Exception
+     * @throws \Exception|\Throwable
      */
-    public function extract()
+    public function extract(): MessageCatalogue
     {
         if (!empty($this->removingTwigVisitor)) {
             $this->removingTwigVisitor->setEnabled(false);

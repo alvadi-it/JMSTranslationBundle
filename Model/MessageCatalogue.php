@@ -36,37 +36,34 @@ use JMS\TranslationBundle\Exception\InvalidArgumentException;
  */
 class MessageCatalogue
 {
-    /**
-     * @var string
-     */
-    private $locale;
+    private ?string $locale = null;
 
     /**
      * @var array
      */
-    private $domains = [];
+    private array $domains = [];
 
-    public function setLocale($locale)
+    public function setLocale($locale): void
     {
         $this->locale = $locale;
     }
 
     /**
-     * @return mixed
+     * @return string|null
      */
-    public function getLocale()
+    public function getLocale(): ?string
     {
         return $this->locale;
     }
 
-    public function add(Message $message)
+    public function add(Message $message): void
     {
         $this
             ->getOrCreateDomain($message->getDomain())
             ->add($message);
     }
 
-    public function set(Message $message, $force = false)
+    public function set(Message $message, $force = false): void
     {
         $this
             ->getOrCreateDomain($message->getDomain())
@@ -81,7 +78,7 @@ class MessageCatalogue
      *
      * @throws InvalidArgumentException
      */
-    public function get($id, $domain = 'messages')
+    public function get(string $id, string $domain = 'messages'): Message
     {
         return $this->getDomain($domain)->get($id);
     }
@@ -91,7 +88,7 @@ class MessageCatalogue
      *
      * @return bool
      */
-    public function has(Message $message)
+    public function has(Message $message): bool
     {
         if (!$this->hasDomain($message->getDomain())) {
             return false;
@@ -100,7 +97,7 @@ class MessageCatalogue
         return $this->getDomain($message->getDomain())->has($message->getId());
     }
 
-    public function merge(MessageCatalogue $catalogue)
+    public function merge(MessageCatalogue $catalogue): void
     {
         foreach ($catalogue->getDomains() as $name => $domainCatalogue) {
             $this->getOrCreateDomain($name)->merge($domainCatalogue);
@@ -112,7 +109,7 @@ class MessageCatalogue
      *
      * @return bool
      */
-    public function hasDomain($domain)
+    public function hasDomain(string $domain): bool
     {
         return isset($this->domains[$domain]);
     }
@@ -122,7 +119,7 @@ class MessageCatalogue
      *
      * @return MessageCollection
      */
-    public function getDomain($domain)
+    public function getDomain(string $domain): MessageCollection
     {
         if (!$this->hasDomain($domain)) {
             throw new InvalidArgumentException(sprintf('There is no domain with name "%s".', $domain));
@@ -134,7 +131,7 @@ class MessageCatalogue
     /**
      * @return array
      */
-    public function getDomains()
+    public function getDomains(): array
     {
         return $this->domains;
     }
@@ -144,7 +141,7 @@ class MessageCatalogue
      *
      * @return MessageCollection
      */
-    private function getOrCreateDomain($domain)
+    private function getOrCreateDomain(string $domain): MessageCollection
     {
         if (!$this->hasDomain($domain)) {
             $this->domains[$domain] = new MessageCollection($this);

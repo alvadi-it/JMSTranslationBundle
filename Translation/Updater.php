@@ -42,37 +42,37 @@ class Updater
     /**
      * @var LoaderManager
      */
-    private $loader;
+    private LoaderManager $loader;
 
     /**
      * @var ExtractorManager
      */
-    private $extractor;
+    private ExtractorManager $extractor;
 
     /**
      * @var Config
      */
-    private $config;
+    private Config $config;
 
     /**
      * @var MessageCatalogue
      */
-    private $existingCatalogue;
+    private MessageCatalogue $existingCatalogue;
 
     /**
      * @var MessageCatalogue
      */
-    private $scannedCatalogue;
+    private MessageCatalogue $scannedCatalogue;
 
     /**
      * @var LoggerInterface
      */
-    private $logger;
+    private LoggerInterface $logger;
 
     /**
      * @var FileWriter
      */
-    private $writer;
+    private FileWriter $writer;
 
     public function __construct(LoaderManager $loader, ExtractorManager $extractor, LoggerInterface $logger, FileWriter $writer)
     {
@@ -82,7 +82,7 @@ class Updater
         $this->writer = $writer;
     }
 
-    public function setLogger(LoggerInterface $logger)
+    public function setLogger(LoggerInterface $logger): void
     {
         $this->logger = $logger;
         $this->extractor->setLogger($logger);
@@ -92,8 +92,9 @@ class Updater
      * @param Config $config
      *
      * @return ChangeSet
+     * @throws \Throwable
      */
-    public function getChangeSet(Config $config)
+    public function getChangeSet(Config $config): ChangeSet
     {
         $this->setConfig($config);
 
@@ -112,7 +113,7 @@ class Updater
      * @param string $id
      * @param string $trans
      */
-    public function updateTranslation($file, $format, $domain, $locale, $id, $trans)
+    public function updateTranslation(string $file, string $format, string $domain, string $locale, string $id, string $trans): void
     {
         $catalogue = $this->loader->loadFile($file, $format, $locale, $domain);
         $catalogue
@@ -130,8 +131,10 @@ class Updater
      * change files of another than the current locale.
      *
      * @param Config $config
+     *
+     * @throws \Throwable
      */
-    public function process(Config $config)
+    public function process(Config $config): void
     {
         $this->setConfig($config);
 
@@ -155,7 +158,7 @@ class Updater
                 $this->config->getLocale()
             );
             foreach (Finder::create()->name($translationFileRegex)->in($this->config->getTranslationsDir())->depth('< 1')->files() as $file) {
-                if ('.' . $format === substr((string) $file, -1 * strlen('.' . $format))) {
+                if (str_ends_with((string)$file, '.' . $format)) {
                     continue;
                 }
 
@@ -182,13 +185,13 @@ class Updater
     /**
      * Detects the most suitable output format to use.
      *
-     * @internal param string $domain
-     *
      * @param string $currentDomain
      *
      * @return string
+          *@internal param string $domain
+     *
      */
-    private function detectOutputFormat($currentDomain)
+    private function detectOutputFormat(string $currentDomain): string
     {
         if (null !== $this->config->getOutputFormat()) {
             return $this->config->getOutputFormat();
@@ -214,22 +217,13 @@ class Updater
             }
         }
 
-        if (null !== $localeFormat) {
-            return $localeFormat;
-        }
-
-        if (null !== $otherLocaleFormat) {
-            return $otherLocaleFormat;
-        }
-
-        if (null !== $otherDomainFormat) {
-            return $otherDomainFormat;
-        }
-
-        return $this->config->getDefaultOutputFormat();
+        return $localeFormat ?? $otherLocaleFormat ?? $otherDomainFormat ?? $this->config->getDefaultOutputFormat();
     }
 
-    private function setConfig(Config $config)
+    /**
+     * @throws \Throwable
+     */
+    private function setConfig(Config $config): void
     {
         $this->config = $config;
 

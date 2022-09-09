@@ -8,12 +8,12 @@ use Symfony\Component\HttpKernel\Kernel;
 
 class TranslationTest extends BaseTestCase
 {
-    public function testTranschoiceWhenTranslationNotYetExtracted()
+    public function testTranschoiceWhenTranslationNotYetExtracted(): void
     {
         $isSf5 = version_compare(Kernel::VERSION, '5.0.0') >= 0;
 
         $url    = $isSf5 ? '/apples/view_sf5' : '/apples/view';
-        $client = $this->createClient();
+        $client = self::createClient();
         $client->request('GET', $url);
         $response = $client->getResponse();
 

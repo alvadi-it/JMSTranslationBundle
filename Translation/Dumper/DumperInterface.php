@@ -40,5 +40,5 @@ interface DumperInterface
      *
      * @return string
      */
-    public function dump(MessageCatalogue $catalogue, $domain = 'messages');
+    public function dump(MessageCatalogue $catalogue, $domain = 'messages'): string;
 }

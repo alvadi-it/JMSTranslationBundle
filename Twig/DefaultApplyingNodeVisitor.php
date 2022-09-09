@@ -44,17 +44,20 @@ class DefaultApplyingNodeVisitor extends AbstractNodeVisitor
     /**
      * @var bool
      */
-    private $enabled = true;
+    private bool $enabled = true;
 
-    public function setEnabled($bool)
+    public function setEnabled($bool): void
     {
         $this->enabled = (bool) $bool;
     }
 
     /**
-     * @return Node
+     * @param Node $node
+     * @param Environment $env
+     *
+     * @return FilterExpression|Node
      */
-    public function doEnterNode(Node $node, Environment $env)
+    public function doEnterNode(Node $node, Environment $env): FilterExpression|Node
     {
         if (!$this->enabled) {
             return $node;
@@ -133,18 +136,12 @@ class DefaultApplyingNodeVisitor extends AbstractNodeVisitor
         return $node;
     }
 
-    /**
-     * @return Node
-     */
-    public function doLeaveNode(Node $node, Environment $env)
+    public function doLeaveNode(Node $node, Environment $env): Node
     {
         return $node;
     }
 
-    /**
-     * @return int
-     */
-    public function getPriority()
+    public function getPriority(): int
     {
         return -2;
     }

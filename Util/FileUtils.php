@@ -41,7 +41,7 @@ abstract class FileUtils
      *
      * @throws \RuntimeException
      */
-    public static function findTranslationFiles($directory)
+    public static function findTranslationFiles($directory): array
     {
         $files = [];
         foreach (Finder::create()->in($directory)->depth('< 1')->files() as $file) {

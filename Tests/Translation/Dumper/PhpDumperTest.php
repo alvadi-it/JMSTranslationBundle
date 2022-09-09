@@ -27,7 +27,7 @@ use JMS\TranslationBundle\Translation\Dumper\PhpDumper;
 
 class PhpDumperTest extends BaseDumperTest
 {
-    public function testDumpStructureWithoutPrettyPrint()
+    public function testDumpStructureWithoutPrettyPrint(): void
     {
         $catalogue = new MessageCatalogue();
         $catalogue->setLocale('fr');
@@ -36,15 +36,15 @@ class PhpDumperTest extends BaseDumperTest
         $dumper = new PhpDumper();
         $dumper->setPrettyPrint(false);
 
-        $this->assertEquals($this->getOutput('structure_wo_pretty_print'), $dumper->dump($catalogue, 'messages'));
+        $this->assertEquals($this->getOutput('structure_wo_pretty_print'), preg_replace("/\n/", "\r\n", $dumper->dump($catalogue)));
     }
 
-    protected function getDumper()
+    protected function getDumper(): PhpDumper
     {
         return new PhpDumper();
     }
 
-    protected function getOutput($key)
+    protected function getOutput($key): bool|string
     {
         $fileRealPath = __DIR__ . '/php/' . $key . '.php';
         if (! is_file($fileRealPath)) {

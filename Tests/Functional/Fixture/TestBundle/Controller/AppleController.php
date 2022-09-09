@@ -18,7 +18,7 @@ class AppleController
      * @Route("/view")
      * @Template("@Test/Apple/view.html.twig")
      */
-    public function viewAction()
+    public function viewAction(): array
     {
         return ['nbApples' => 5];
     }
@@ -27,7 +27,7 @@ class AppleController
      * @Route("/view_sf5")
      * @Template("@Test/Apple/view_sf5.html.twig")
      */
-    public function viewsf5Action()
+    public function viewsf5Action(): array
     {
         return ['nbApples' => 5];
     }

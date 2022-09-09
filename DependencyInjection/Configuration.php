@@ -26,14 +26,14 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 class Configuration implements ConfigurationInterface
 {
-    private $container;
+    private ContainerBuilder $container;
 
     public function __construct(ContainerBuilder $container)
     {
         $this->container = $container;
     }
 
-    public function getConfigTreeBuilder()
+    public function getConfigTreeBuilder(): TreeBuilder
     {
         $c = $this->container;
 

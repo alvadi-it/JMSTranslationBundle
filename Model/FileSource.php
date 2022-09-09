@@ -25,24 +25,18 @@ class FileSource implements SourceInterface
     /**
      * @var string
      */
-    private $path;
+    private string $path;
 
-    /**
-     * @var int
-     */
-    private $line;
+    private ?int $line;
 
-    /**
-     * @var int
-     */
-    private $column;
+    private ?int $column;
 
     /**
      * @param string $path
      * @param int|null $line
      * @param int|null $column
      */
-    public function __construct($path, $line = null, $column = null)
+    public function __construct(string $path, ?int $line = null, ?int $column = null)
     {
         $this->path = $path;
         $this->line = $line;
@@ -52,23 +46,17 @@ class FileSource implements SourceInterface
     /**
      * @return string
      */
-    public function getPath()
+    public function getPath(): string
     {
         return $this->path;
     }
 
-    /**
-     * @return int|null
-     */
-    public function getLine()
+    public function getLine(): ?int
     {
         return $this->line;
     }
 
-    /**
-     * @return int|null
-     */
-    public function getColumn()
+    public function getColumn(): ?int
     {
         return $this->column;
     }
@@ -78,12 +66,8 @@ class FileSource implements SourceInterface
      *
      * @return bool
      */
-    public function equals(SourceInterface $source)
+    public function equals(SourceInterface $source): bool
     {
-        if (!$source instanceof FileSource) {
-            return false;
-        }
-
         if ($this->path !== $source->getPath()) {
             return false;
         }

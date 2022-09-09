@@ -20,6 +20,7 @@ declare(strict_types=1);
 
 namespace JMS\TranslationBundle\Tests\Functional;
 
+use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
 use JMS\TranslationBundle\Exception\RuntimeException;
 use JMS\TranslationBundle\JMSTranslationBundle;
 use JMS\TranslationBundle\Tests\Functional\Fixture\TestBundle\TestBundle;
@@ -32,7 +33,7 @@ use Symfony\Component\HttpKernel\Kernel;
 
 class AppKernel extends Kernel
 {
-    private $config;
+    private mixed $config;
 
     public function __construct($config)
     {
@@ -50,18 +51,19 @@ class AppKernel extends Kernel
         $this->config = $config;
     }
 
-    public function registerBundles()
+    public function registerBundles(): iterable
     {
         return [
-            new TestBundle(),
             new FrameworkBundle(),
+            new SensioFrameworkExtraBundle(),
+            new DoctrineBundle(),
             new TwigBundle(),
             new JMSTranslationBundle(),
-            new SensioFrameworkExtraBundle(),
+            new TestBundle(),
         ];
     }
 
-    public function registerContainerConfiguration(LoaderInterface $loader)
+    public function registerContainerConfiguration(LoaderInterface $loader): void
     {
         $loader->load($this->config);
     }
@@ -76,7 +78,7 @@ class AppKernel extends Kernel
         return $this->getBaseDir() . '/logs';
     }
 
-    public function getProjectDir()
+    public function getProjectDir(): string
     {
         return __DIR__;
     }
@@ -91,7 +93,7 @@ class AppKernel extends Kernel
         return $this->config;
     }
 
-    public function unserialize($config)
+    public function unserialize($config): void
     {
         $this->__construct($config);
     }

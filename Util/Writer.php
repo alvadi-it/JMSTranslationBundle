@@ -34,34 +34,34 @@ class Writer
     /**
      * @var int
      */
-    public $indentationSpaces = 4;
+    public int $indentationSpaces = 4;
 
     /**
      * @var int
      */
-    public $indentationLevel = 0;
+    public int $indentationLevel = 0;
 
     /**
      * @var string
      */
-    public $content = '';
+    public string $content = '';
 
     /**
      * @var int
      */
-    public $changeCount = 0;
+    public int $changeCount = 0;
 
     /**
      * @var array
      */
-    private $changes = [];
+    private array $changes = [];
 
     /**
      * @return $this
      */
-    public function indent()
+    public function indent(): static
     {
-        $this->indentationLevel += 1;
+        ++$this->indentationLevel;
 
         return $this;
     }
@@ -69,9 +69,9 @@ class Writer
     /**
      * @return $this
      */
-    public function outdent()
+    public function outdent(): static
     {
-        $this->indentationLevel -= 1;
+        --$this->indentationLevel;
 
         if ($this->indentationLevel < 0) {
             throw new RuntimeException('The identation level cannot be less than zero.');
@@ -85,17 +85,17 @@ class Writer
      *
      * @return $this
      */
-    public function writeln($content)
+    public function writeln(string $content): static
     {
         $this->write($content . "\n");
 
         return $this;
     }
 
-    public function revert()
+    public function revert(): void
     {
         $change = array_pop($this->changes);
-        $this->changeCount -= 1;
+        --$this->changeCount;
         $this->content = substr($this->content, 0, -1 * strlen($change));
     }
 
@@ -104,7 +104,7 @@ class Writer
      *
      * @return $this
      */
-    public function write($content)
+    public function write(string $content): static
     {
         $contentEndsWithNewLine = "\n" === substr($this->content, -1);
         $addition = '';
@@ -128,7 +128,7 @@ class Writer
 
         $this->content .= $addition;
         $this->changes[] = $addition;
-        $this->changeCount += 1;
+        ++$this->changeCount;
 
         return $this;
     }
@@ -138,7 +138,7 @@ class Writer
      *
      * @return $this
      */
-    public function rtrim($preserveNewLines = true)
+    public function rtrim($preserveNewLines = true): static
     {
         if (!$preserveNewLines) {
             $this->content = rtrim($this->content);
@@ -146,7 +146,7 @@ class Writer
             return $this;
         }
 
-        $addNl = "\n" === substr($this->content, -1);
+        $addNl = str_ends_with($this->content, "\n");
         $this->content = rtrim($this->content);
 
         if ($addNl) {
@@ -159,7 +159,7 @@ class Writer
     /**
      * @return $this
      */
-    public function reset()
+    public function reset(): static
     {
         $this->content = '';
         $this->indentationLevel = 0;
@@ -170,7 +170,7 @@ class Writer
     /**
      * @return string
      */
-    public function getContent()
+    public function getContent(): string
     {
         return $this->content;
     }

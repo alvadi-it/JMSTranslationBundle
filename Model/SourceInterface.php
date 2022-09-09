@@ -24,5 +24,7 @@ interface SourceInterface
 {
     public function equals(SourceInterface $source);
 
+    public function getPath(): string;
+
     public function __toString();
 }

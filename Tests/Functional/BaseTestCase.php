@@ -22,10 +22,11 @@ namespace JMS\TranslationBundle\Tests\Functional;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpKernel\Kernel;
+use Symfony\Component\HttpKernel\KernelInterface;
 
 class BaseTestCase extends WebTestCase
 {
-    protected static function createKernel(array $options = [])
+    protected static function createKernel(array $options = []): KernelInterface
     {
         $isSf5 = version_compare(Kernel::VERSION, '5.0.0') >= 0;
 

@@ -43,42 +43,36 @@ class FormExtractor implements FileVisitorInterface, LoggerAwareInterface, NodeV
     /**
      * @var FileSourceFactory
      */
-    private $fileSourceFactory;
+    private FileSourceFactory $fileSourceFactory;
 
     /**
      * @var DocParser
      */
-    private $docParser;
+    private DocParser $docParser;
 
     /**
      * @var NodeTraverser
      */
-    private $traverser;
+    private NodeTraverser $traverser;
 
     /**
      * @var \SplFileInfo
      */
-    private $file;
+    private \SplFileInfo $file;
 
     /**
      * @var MessageCatalogue
      */
-    private $catalogue;
+    private MessageCatalogue $catalogue;
 
     /**
      * @var LoggerInterface
      */
-    private $logger;
+    private LoggerInterface $logger;
 
-    /**
-     * @var string
-     */
-    private $defaultDomain;
+    private ?string $defaultDomain = null;
 
-    /**
-     * @var string
-     */
-    private $defaultDomainMessages;
+    private array $defaultDomainMessages = [];
 
     public function __construct(DocParser $docParser, FileSourceFactory $fileSourceFactory)
     {
@@ -90,10 +84,8 @@ class FormExtractor implements FileVisitorInterface, LoggerAwareInterface, NodeV
 
     /**
      * @param Node $node
-     *
-     * @return null
      */
-    public function enterNode(Node $node)
+    public function enterNode(Node $node): void
     {
         if ($node instanceof Node\Stmt\Class_) {
             $this->defaultDomain = null;
@@ -490,7 +482,7 @@ class FormExtractor implements FileVisitorInterface, LoggerAwareInterface, NodeV
      * @param MessageCatalogue $catalogue
      * @param array $ast
      */
-    public function visitPhpFile(\SplFileInfo $file, MessageCatalogue $catalogue, array $ast)
+    public function visitPhpFile(\SplFileInfo $file, MessageCatalogue $catalogue, array $ast): void
     {
         $this->file = $file;
         $this->catalogue = $catalogue;
@@ -506,39 +498,29 @@ class FormExtractor implements FileVisitorInterface, LoggerAwareInterface, NodeV
     /**
      * @param Node $node
      *
-     * @return Node[]|void|null
+     * @return void
      */
-    public function leaveNode(Node $node)
+    public function leaveNode(Node $node): void
     {
     }
 
-    /**
-     * @param array $nodes
-     *
-     * @return Node[]|void|null
-     */
-    public function beforeTraverse(array $nodes)
+    public function beforeTraverse(array $nodes): void
     {
     }
 
-    /**
-     * @param array $nodes
-     *
-     * @return Node[]|void|null
-     */
-    public function afterTraverse(array $nodes)
+    public function afterTraverse(array $nodes): void
     {
     }
 
-    public function visitFile(\SplFileInfo $file, MessageCatalogue $catalogue)
+    public function visitFile(\SplFileInfo $file, MessageCatalogue $catalogue): void
     {
     }
 
-    public function visitTwigFile(\SplFileInfo $file, MessageCatalogue $catalogue, TwigNode $ast)
+    public function visitTwigFile(\SplFileInfo $file, MessageCatalogue $catalogue, TwigNode $ast): void
     {
     }
 
-    public function setLogger(LoggerInterface $logger)
+    public function setLogger(LoggerInterface $logger): void
     {
         $this->logger = $logger;
     }

@@ -37,7 +37,7 @@ use JMS\TranslationBundle\Model\Message;
  */
 class XliffMessage extends Message
 {
-    protected static $states = [];
+    protected static array $states = [];
     public const STATE_NONE = null;
     public const STATE_FINAL = 'final';
     public const STATE_NEEDS_ADAPTATION = 'needs-adaptation';
@@ -50,14 +50,14 @@ class XliffMessage extends Message
     public const STATE_SIGNED_OFF = 'signed-off';
     public const STATE_TRANSLATED = 'translated';
 
-    protected $approved = false;
-    protected $state;
-    protected $notes = [];
+    protected bool $approved = false;
+    protected ?string $state;
+    protected array $notes = [];
 
     /**
      * @return bool
      */
-    public function isApproved()
+    public function isApproved(): bool
     {
         return $this->approved;
     }
@@ -67,9 +67,9 @@ class XliffMessage extends Message
      *
      * @return $this
      */
-    public function setApproved($approved)
+    public function setApproved(bool $approved): static
     {
-        $this->approved = (bool) $approved;
+        $this->approved = $approved;
 
         return $this;
     }
@@ -77,17 +77,17 @@ class XliffMessage extends Message
     /**
      * @return bool
      */
-    public function hasState()
+    public function hasState(): bool
     {
         return isset($this->state);
     }
 
     /**
-     * @param string $state
+     * @param string|null $state
      *
      * @return $this
      */
-    public function setState($state = null)
+    public function setState(string $state = null): static
     {
         $this->state = $state;
         parent::setNew($this->isNew());
@@ -96,9 +96,9 @@ class XliffMessage extends Message
     }
 
     /**
-     * @return XliffMessageState|string
+     * @return string|null
      */
-    public function getState()
+    public function getState(): ?string
     {
         return $this->state;
     }
@@ -106,7 +106,7 @@ class XliffMessage extends Message
     /**
      * @return bool
      */
-    public function isNew()
+    public function isNew(): bool
     {
         return $this->state === XliffMessageState::STATE_NEW;
     }
@@ -116,7 +116,7 @@ class XliffMessage extends Message
      *
      * @return $this
      */
-    public function setNew($bool)
+    public function setNew(bool $bool): static
     {
         if ($bool) {
             $this->state = XliffMessageState::STATE_NEW;
@@ -131,7 +131,7 @@ class XliffMessage extends Message
     /**
      * @return bool
      */
-    public function isWritable()
+    public function isWritable(): bool
     {
         return !($this->isApproved() || ($this->hasState() && $this->state !== XliffMessageState::STATE_NEW));
     }
@@ -139,7 +139,7 @@ class XliffMessage extends Message
     /**
      * @return bool
      */
-    public function hasNotes()
+    public function hasNotes(): bool
     {
         return !empty($this->notes);
     }
@@ -147,7 +147,7 @@ class XliffMessage extends Message
     /**
      * @return array
      */
-    public function getNotes()
+    public function getNotes(): array
     {
         return $this->notes;
     }
@@ -158,10 +158,10 @@ class XliffMessage extends Message
      *
      * @return $this
      */
-    public function addNote($text, $from = null)
+    public function addNote(string $text, $from = null): static
     {
         $note = [
-            'text' => (string) $text,
+            'text' => $text,
         ];
         if (isset($from)) {
             $note['from'] = (string) $from;
@@ -176,7 +176,7 @@ class XliffMessage extends Message
      *
      * @return $this
      */
-    public function setNotes(array $notes = [])
+    public function setNotes(array $notes = []): static
     {
         $this->notes = $notes;
 
@@ -195,7 +195,7 @@ class XliffMessage extends Message
     /**
      * {@inheritdoc}
      */
-    public function merge(Message $message)
+    public function merge(Message $message): void
     {
         if ($this->getId() !== $message->getId()) {
             throw new RuntimeException(sprintf('You can only merge messages with the same id. Expected id "%s", but got "%s".', $this->getId(), $message->getId()));
@@ -226,7 +226,7 @@ class XliffMessage extends Message
     /**
      * {@inheritdoc}
      */
-    public function mergeExisting(Message $message)
+    public function mergeExisting(Message $message): void
     {
         if ($this->getId() !== $message->getId()) {
             throw new RuntimeException(sprintf('You can only merge messages with the same id. Expected id "%s", but got "%s".', $this->getId(), $message->getId()));
@@ -253,7 +253,7 @@ class XliffMessage extends Message
     /**
      * {@inheritdoc}
      */
-    public function mergeScanned(Message $message)
+    public function mergeScanned(Message $message): void
     {
         if ($this->getId() !== $message->getId()) {
             throw new RuntimeException(sprintf('You can only merge messages with the same id. Expected id "%s", but got "%s".', $this->getId(), $message->getId()));
@@ -282,9 +282,9 @@ class XliffMessage extends Message
      * Merge XLIFF metadata into this message, if description has changed.
      *
      * @param Message $message The message we are merging with
-     * @param string  $oldDesc The description before merging
+     * @param string|null $oldDesc The description before merging
      */
-    protected function mergeXliffMeta(Message $message, $oldDesc)
+    protected function mergeXliffMeta(Message $message, ?string $oldDesc): void
     {
         if ($oldDesc !== $this->getDesc()) {
             if ($message instanceof self) {

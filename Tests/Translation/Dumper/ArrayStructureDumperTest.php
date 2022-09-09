@@ -27,7 +27,7 @@ use PHPUnit\Framework\TestCase;
 
 class ArrayStructureDumperTest extends TestCase
 {
-    public function testPathWithSubPath()
+    public function testPathWithSubPath(): void
     {
         $catalogue = new MessageCatalogue();
         $catalogue->setLocale('fr');
@@ -46,7 +46,7 @@ class ArrayStructureDumperTest extends TestCase
             ])
             ->willReturn('foo');
 
-        $this->assertEquals('foo', $dumper->dump($catalogue, 'messages'));
+        $this->assertEquals('foo', $dumper->dump($catalogue));
     }
 
     private function getDumper()

@@ -26,9 +26,7 @@ use JMS\TranslationBundle\Translation\Extractor\FileVisitorInterface;
 use PhpParser\Node;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor;
-use Symfony\Component\Validator\Mapping\ClassMetadataFactoryInterface;
 use Symfony\Component\Validator\Mapping\Factory\MetadataFactoryInterface;
-use Symfony\Component\Validator\MetadataFactoryInterface as LegacyMetadataFactoryInterface;
 use Twig\Node\Node as TwigNode;
 
 /**
@@ -38,37 +36,25 @@ use Twig\Node\Node as TwigNode;
  */
 class ValidationExtractor implements FileVisitorInterface, NodeVisitor
 {
-    /**
-     * @var ClassMetadataFactoryInterface|MetadataFactoryInterface|LegacyMetadataFactoryInterface
-     */
-    private $metadataFactory;
+    private MetadataFactoryInterface $metadataFactory;
 
     /**
      * @var NodeTraverser
      */
-    private $traverser;
+    private NodeTraverser $traverser;
 
     /**
      * @var MessageCatalogue
      */
-    private $catalogue;
+    private MessageCatalogue $catalogue;
 
     /**
      * @var string
      */
-    private $namespace = '';
+    private string $namespace = '';
 
-    public function __construct($metadataFactory)
+    public function __construct(MetadataFactoryInterface $metadataFactory)
     {
-        if (
-            ! (
-            $metadataFactory instanceof MetadataFactoryInterface
-            || $metadataFactory instanceof LegacyMetadataFactoryInterface
-            || $metadataFactory instanceof ClassMetadataFactoryInterface
-            )
-        ) {
-            throw new \InvalidArgumentException(sprintf('%s expects an instance of MetadataFactoryInterface or ClassMetadataFactoryInterface', static::class));
-        }
         $this->metadataFactory = $metadataFactory;
 
         $this->traverser = new NodeTraverser();
@@ -79,8 +65,9 @@ class ValidationExtractor implements FileVisitorInterface, NodeVisitor
      * @param Node $node
      *
      * @return void
+     * @throws \ReflectionException
      */
-    public function enterNode(Node $node)
+    public function enterNode(Node $node): void
     {
         if ($node instanceof Node\Stmt\Namespace_) {
             if (isset($node->name)) {
@@ -100,7 +87,7 @@ class ValidationExtractor implements FileVisitorInterface, NodeVisitor
             return;
         }
 
-        $metadata = $this->metadataFactory instanceof ClassMetadataFactoryInterface ? $this->metadataFactory->getClassMetadata($name) : $this->metadataFactory->getMetadataFor($name);
+        $metadata = $this->metadataFactory->getMetadataFor($name);
         if (!$metadata->hasConstraints() && !count($metadata->getConstrainedProperties())) {
             return;
         }
@@ -118,7 +105,7 @@ class ValidationExtractor implements FileVisitorInterface, NodeVisitor
      * @param MessageCatalogue $catalogue
      * @param array $ast
      */
-    public function visitPhpFile(\SplFileInfo $file, MessageCatalogue $catalogue, array $ast)
+    public function visitPhpFile(\SplFileInfo $file, MessageCatalogue $catalogue, array $ast): void
     {
         $this->namespace = '';
         $this->catalogue = $catalogue;
@@ -130,7 +117,7 @@ class ValidationExtractor implements FileVisitorInterface, NodeVisitor
      *
      * @return void
      */
-    public function beforeTraverse(array $nodes)
+    public function beforeTraverse(array $nodes): void
     {
     }
 
@@ -139,7 +126,7 @@ class ValidationExtractor implements FileVisitorInterface, NodeVisitor
      *
      * @return void
      */
-    public function leaveNode(Node $node)
+    public function leaveNode(Node $node): void
     {
     }
 
@@ -148,20 +135,22 @@ class ValidationExtractor implements FileVisitorInterface, NodeVisitor
      *
      * @return void
      */
-    public function afterTraverse(array $nodes)
+    public function afterTraverse(array $nodes): void
     {
     }
 
-    public function visitFile(\SplFileInfo $file, MessageCatalogue $catalogue)
+    public function visitFile(\SplFileInfo $file, MessageCatalogue $catalogue): void
     {
     }
 
-    public function visitTwigFile(\SplFileInfo $file, MessageCatalogue $catalogue, TwigNode $ast)
+    public function visitTwigFile(\SplFileInfo $file, MessageCatalogue $catalogue, TwigNode $ast): void
     {
     }
 
     /**
      * @param array $constraints
+     *
+     * @throws \ReflectionException
      */
     private function extractFromConstraints(array $constraints)
     {

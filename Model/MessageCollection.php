@@ -36,14 +36,14 @@ class MessageCollection
     /**
      * @var MessageCatalogue
      */
-    private $catalogue;
+    private MessageCatalogue $catalogue;
 
     /**
      * @var array
      */
-    private $messages = [];
+    private array $messages = [];
 
-    public function setCatalogue(MessageCatalogue $catalogue)
+    public function setCatalogue(MessageCatalogue $catalogue): void
     {
         $this->catalogue = $catalogue;
     }
@@ -51,12 +51,12 @@ class MessageCollection
     /**
      * @return MessageCatalogue
      */
-    public function getCatalogue()
+    public function getCatalogue(): MessageCatalogue
     {
         return $this->catalogue;
     }
 
-    public function add(Message $message)
+    public function add(Message $message): void
     {
         if (isset($this->messages[$id = $message->getId()])) {
             $this->checkConsistency($this->messages[$id], $message);
@@ -68,7 +68,7 @@ class MessageCollection
         $this->messages[$id] = $message;
     }
 
-    public function set(Message $message, $force = false)
+    public function set(Message $message, $force = false): void
     {
         $id = $message->getId();
         if (!$force && isset($this->messages[$id])) {
@@ -85,7 +85,7 @@ class MessageCollection
      *
      * @throws InvalidArgumentException
      */
-    public function get($id)
+    public function get(string $id): mixed
     {
         if (!isset($this->messages[$id])) {
             throw new InvalidArgumentException(sprintf('There is no message with id "%s".', $id));
@@ -99,7 +99,7 @@ class MessageCollection
      *
      * @return bool
      */
-    public function has($id)
+    public function has(string $id): bool
     {
         return isset($this->messages[$id]);
     }
@@ -109,10 +109,10 @@ class MessageCollection
      *
      * @throws InvalidArgumentException
      */
-    public function sort($callback)
+    public function sort(callable $callback): void
     {
         if (!is_callable($callback)) {
-            throw new InvalidArgumentException(sprintf('$callback must be a valid callback.'));
+            throw new InvalidArgumentException('$callback must be a valid callback.');
         }
 
         uasort($this->messages, $callback);
@@ -123,10 +123,10 @@ class MessageCollection
      *
      * @throws InvalidArgumentException
      */
-    public function filter($callback)
+    public function filter(callable $callback): void
     {
         if (!is_callable($callback)) {
-            throw new InvalidArgumentException(sprintf('$callback must be a valid callback.'));
+            throw new InvalidArgumentException('$callback must be a valid callback.');
         }
 
         $this->messages = array_filter($this->messages, $callback);
@@ -135,7 +135,7 @@ class MessageCollection
     /**
      * @param array $messages
      */
-    public function replace(array $messages)
+    public function replace(array $messages): void
     {
         $this->messages = $messages;
     }
@@ -143,19 +143,19 @@ class MessageCollection
     /**
      * @return array
      */
-    public function all()
+    public function all(): array
     {
         return $this->messages;
     }
 
-    public function merge(MessageCollection $domain)
+    public function merge(MessageCollection $domain): void
     {
-        foreach ($domain->all() as $id => $message) {
+        foreach ($domain->all() as $message) {
             $this->add($message);
         }
     }
 
-    private function checkConsistency(Message $oldMessage, Message $newMessage)
+    private function checkConsistency(Message $oldMessage, Message $newMessage): void
     {
         $oldDesc = $oldMessage->getDesc();
         $newDesc = $newMessage->getDesc();

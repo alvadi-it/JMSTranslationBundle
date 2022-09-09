@@ -38,27 +38,27 @@ class TwigFileExtractor extends AbstractNodeVisitor implements FileVisitorInterf
     /**
      * @var FileSourceFactory
      */
-    private $fileSourceFactory;
+    private FileSourceFactory $fileSourceFactory;
 
     /**
      * @var \SplFileInfo
      */
-    private $file;
+    private \SplFileInfo $file;
 
     /**
      * @var MessageCatalogue
      */
-    private $catalogue;
+    private MessageCatalogue $catalogue;
 
     /**
      * @var NodeTraverser
      */
-    private $traverser;
+    private NodeTraverser $traverser;
 
     /**
      * @var array
      */
-    private $stack = [];
+    private array $stack = [];
 
     public function __construct(Environment $env, FileSourceFactory $fileSourceFactory)
     {
@@ -69,7 +69,7 @@ class TwigFileExtractor extends AbstractNodeVisitor implements FileVisitorInterf
     /**
      * @return Node
      */
-    protected function doEnterNode(Node $node, Environment $env)
+    protected function doEnterNode(Node $node, Environment $env): TransNode|Node|FilterExpression
     {
         $this->stack[] = $node;
 
@@ -148,12 +148,12 @@ class TwigFileExtractor extends AbstractNodeVisitor implements FileVisitorInterf
     /**
      * @return int
      */
-    public function getPriority()
+    public function getPriority(): int
     {
         return 0;
     }
 
-    public function visitTwigFile(\SplFileInfo $file, MessageCatalogue $catalogue, Node $ast)
+    public function visitTwigFile(\SplFileInfo $file, MessageCatalogue $catalogue, Node $ast): void
     {
         $this->file = $file;
         $this->catalogue = $catalogue;
@@ -166,7 +166,7 @@ class TwigFileExtractor extends AbstractNodeVisitor implements FileVisitorInterf
      * in the same manner as we do the main twig template to ensure all translations are
      * caught.
      */
-    private function traverseEmbeddedTemplates(Node $node)
+    private function traverseEmbeddedTemplates(Node $node): void
     {
         $templates = $node->getAttribute('embedded_templates');
 
@@ -179,16 +179,19 @@ class TwigFileExtractor extends AbstractNodeVisitor implements FileVisitorInterf
     }
 
     /**
+     * @param Node $node
+     * @param Environment $env
+     *
      * @return Node
      */
-    protected function doLeaveNode(Node $node, Environment $env)
+    protected function doLeaveNode(Node $node, Environment $env): Node
     {
         array_pop($this->stack);
 
         return $node;
     }
 
-    public function visitFile(\SplFileInfo $file, MessageCatalogue $catalogue)
+    public function visitFile(\SplFileInfo $file, MessageCatalogue $catalogue): void
     {
     }
 
@@ -197,7 +200,7 @@ class TwigFileExtractor extends AbstractNodeVisitor implements FileVisitorInterf
      * @param MessageCatalogue $catalogue
      * @param array $ast
      */
-    public function visitPhpFile(\SplFileInfo $file, MessageCatalogue $catalogue, array $ast)
+    public function visitPhpFile(\SplFileInfo $file, MessageCatalogue $catalogue, array $ast): void
     {
     }
 }

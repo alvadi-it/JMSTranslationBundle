@@ -34,57 +34,52 @@ class Message
      *
      * @var string
      */
-    private $id;
+    private string $id;
 
     /**
      * @var bool
      */
-    private $new = true;
+    private bool $new = true;
 
     /**
      * @var string
      */
-    private $domain;
+    private string $domain;
 
-    /**
-     * This is the translated string.
-     *
-     * @var string
-     */
-    private $localeString;
+    private ?string $localeString = null;
 
     /**
      * Additional information about the intended meaning.
      *
      * @var string
      */
-    private $meaning;
+    private ?string $meaning = null;
 
     /**
      * The description/sample for translators.
      *
      * @var string
      */
-    private $desc;
+    private ?string $desc = null;
 
     /**
      * The sources where this message occurs.
      *
      * @var array
      */
-    private $sources = [];
+    private array $sources = [];
 
     /**
-     * @deprecated Will be removed in 2.0. Use the FileSourceFactory
-     *
      * @param string $id
      * @param string $domain
      *
      * @return Message
      *
      * @static
+     *@deprecated Will be removed in 2.0. Use the FileSourceFactory
+     *
      */
-    public static function forThisFile($id, $domain = 'messages')
+    public static function forThisFile(string $id, string $domain = 'messages'): Message
     {
         $message = new static($id, $domain);
 
@@ -104,7 +99,7 @@ class Message
      *
      * @static
      */
-    public static function create($id, $domain = 'messages')
+    public static function create(string $id, string $domain = 'messages'): static
     {
         return new static($id, $domain);
     }
@@ -113,9 +108,9 @@ class Message
      * @param string $id
      * @param string $domain
      */
-    public function __construct($id, $domain = 'messages')
+    public function __construct(string $id, string $domain = 'messages')
     {
-        $this->id = (string) $id;
+        $this->id = $id;
         $this->domain = $domain;
     }
 
@@ -124,7 +119,7 @@ class Message
      *
      * @return Message
      */
-    public function addSource(SourceInterface $source)
+    public function addSource(SourceInterface $source): static
     {
         if ($this->hasSource($source)) {
             return $this;
@@ -138,7 +133,7 @@ class Message
     /**
      * @return string
      */
-    public function getId()
+    public function getId(): string
     {
         return $this->id;
     }
@@ -146,7 +141,7 @@ class Message
     /**
      * @return string
      */
-    public function getDomain()
+    public function getDomain(): string
     {
         return $this->domain;
     }
@@ -154,7 +149,7 @@ class Message
     /**
      * @return bool
      */
-    public function isNew()
+    public function isNew(): bool
     {
         return $this->new;
     }
@@ -168,7 +163,7 @@ class Message
      *
      * @return string
      */
-    public function getLocaleString()
+    public function getLocaleString(): string
     {
         return $this->localeString ?? ($this->new ? ($this->desc ?? $this->id) : '');
     }
@@ -181,23 +176,17 @@ class Message
      *
      * @return string
      */
-    public function getSourceString()
+    public function getSourceString(): string
     {
         return $this->desc ?: $this->id;
     }
 
-    /**
-     * @return string
-     */
-    public function getMeaning()
+    public function getMeaning(): ?string
     {
         return $this->meaning;
     }
 
-    /**
-     * @return string
-     */
-    public function getDesc()
+    public function getDesc(): ?string
     {
         return $this->desc;
     }
@@ -205,17 +194,12 @@ class Message
     /**
      * @return array
      */
-    public function getSources()
+    public function getSources(): array
     {
         return $this->sources;
     }
 
-    /**
-     * @param string $meaning
-     *
-     * @return $this
-     */
-    public function setMeaning($meaning)
+    public function setMeaning(?string $meaning = null): static
     {
         $this->meaning = $meaning;
 
@@ -227,19 +211,14 @@ class Message
      *
      * @return $this
      */
-    public function setNew($bool)
+    public function setNew(bool $bool): static
     {
-        $this->new = (bool) $bool;
+        $this->new = $bool;
 
         return $this;
     }
 
-    /**
-     * @param string $desc
-     *
-     * @return $this
-     */
-    public function setDesc($desc)
+    public function setDesc(?string $desc = null): static
     {
         $this->desc = $desc;
 
@@ -251,14 +230,14 @@ class Message
      *
      * @return $this
      */
-    public function setLocaleString($str)
+    public function setLocaleString(string $str): static
     {
         $this->localeString = $str;
 
         return $this;
     }
 
-    public function setSources(array $sources = [])
+    public function setSources(array $sources = []): static
     {
         $this->sources = $sources;
 
@@ -274,7 +253,7 @@ class Message
      *
      * @return bool
      */
-    public function hasLocaleString()
+    public function hasLocaleString(): bool
     {
         return !empty($this->localeString);
     }
@@ -289,7 +268,7 @@ class Message
      *
      * @throws RuntimeException
      */
-    public function merge(Message $message)
+    public function merge(Message $message): void
     {
         if ($this->id !== $message->getId()) {
             throw new RuntimeException(sprintf('You can only merge messages with the same id. Expected id "%s", but got "%s".', $this->id, $message->getId()));
@@ -324,7 +303,7 @@ class Message
      *
      * @param Message $message
      */
-    public function mergeExisting(Message $message)
+    public function mergeExisting(Message $message): void
     {
         if ($this->id !== $message->getId()) {
             throw new RuntimeException(sprintf('You can only merge messages with the same id. Expected id "%s", but got "%s".', $this->id, $message->getId()));
@@ -357,7 +336,7 @@ class Message
      *
      * @param Message $message
      */
-    public function mergeScanned(Message $message)
+    public function mergeScanned(Message $message): void
     {
         if ($this->id !== $message->getId()) {
             throw new RuntimeException(sprintf('You can only merge messages with the same id. Expected id "%s", but got "%s".', $this->id, $message->getId()));
@@ -386,7 +365,7 @@ class Message
      *
      * @return bool
      */
-    public function hasSource(SourceInterface $source)
+    public function hasSource(SourceInterface $source): bool
     {
         foreach ($this->sources as $cSource) {
             if ($cSource->equals($source)) {

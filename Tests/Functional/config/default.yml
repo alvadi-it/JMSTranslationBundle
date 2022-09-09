@@ -2,6 +2,8 @@ imports:
     - { resource: framework.yml }
     - { resource: twig.yml }
     - { resource: bundle.yml }
+    - { resource: sensio_framework_extra.yml }
+    - { resource: doctrine.yml }
 
 framework:
     templating:
@@ -9,7 +11,11 @@ framework:
 
 parameters:
     translation_output_dir: "%kernel.project_dir%/Fixture/TestBundle/Resources/translations"
-
+    database_host: 127.0.0.1
+    database_port: null
+    database_name: database_name
+    database_user: root
+    database_password: null
 services:
     logger:
         class: Psr\Log\NullLogger

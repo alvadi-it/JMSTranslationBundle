@@ -24,11 +24,11 @@ use Symfony\Component\Console\Output\Output as AbstractOutput;
 
 class Output extends AbstractOutput
 {
-    private $content = '';
+    private string $content = '';
 
-    public function doWrite($content, $newline)
+    public function doWrite(string $message, bool $newline): void
     {
-        $this->content .= $content;
+        $this->content .= $message;
 
         if (! $newline) {
             return;
@@ -37,7 +37,7 @@ class Output extends AbstractOutput
         $this->content .= "\n";
     }
 
-    public function getContent()
+    public function getContent(): string
     {
         return $this->content;
     }

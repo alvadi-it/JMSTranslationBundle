@@ -38,17 +38,17 @@ class TranslateController
     /**
      * @var ConfigFactory
      */
-    private $configFactory;
+    private ConfigFactory $configFactory;
 
     /**
      * @var LoaderManager
      */
-    private $loader;
+    private LoaderManager $loader;
 
     /**
      * @var string
      */
-    private $sourceLanguage;
+    private string $sourceLanguage = '';
 
     public function __construct(ConfigFactory $configFactory, LoaderManager $loader)
     {
@@ -59,7 +59,7 @@ class TranslateController
     /**
      * @param string $lang
      */
-    public function setSourceLanguage($lang)
+    public function setSourceLanguage($lang): void
     {
         $this->sourceLanguage = $lang;
     }
@@ -72,7 +72,7 @@ class TranslateController
      * @Route("/", name="jms_translation_index", options = {"i18n" = false})
      * @Template("@JMSTranslation/Translate/index.html.twig")
      */
-    public function indexAction(Request $request)
+    public function indexAction(Request $request): array
     {
         $configs = $this->configFactory->getNames();
         $config = $request->query->get('config') ?: reset($configs);

@@ -27,7 +27,7 @@ use PHPUnit\Framework\TestCase;
 
 abstract class BaseDumperTest extends TestCase
 {
-    public function testSimpleDump()
+    public function testSimpleDump(): void
     {
         $catalogue = new MessageCatalogue();
         $catalogue->setLocale('en');
@@ -35,10 +35,10 @@ abstract class BaseDumperTest extends TestCase
         $message = new Message('foo');
         $catalogue->add($message);
 
-        $this->assertEquals($this->getOutput('simple'), $this->dump($catalogue, 'messages'));
+        $this->assertEquals($this->getOutput('simple'), preg_replace("/\n/", "\r\n", $this->dump($catalogue)));
     }
 
-    public function testDumpWithMetadata()
+    public function testDumpWithMetadata(): void
     {
         $catalogue = new MessageCatalogue();
         $catalogue->setLocale('en');
@@ -48,10 +48,10 @@ abstract class BaseDumperTest extends TestCase
         $message->setMeaning('baz');
         $catalogue->add($message);
 
-        $this->assertEquals($this->getOutput('with_metadata'), $this->dump($catalogue, 'messages'));
+        $this->assertEquals($this->getOutput('with_metadata'), preg_replace("/\n/", "\r\n", $this->dump($catalogue)));
     }
 
-    public function testDumpStructure()
+    public function testDumpStructure(): void
     {
         $catalogue = new MessageCatalogue();
         $catalogue->setLocale('en');
@@ -61,10 +61,10 @@ abstract class BaseDumperTest extends TestCase
         $message->addSource(new FileSource('bar/baz', 1, 2));
         $catalogue->add($message);
 
-        $this->assertEquals($this->getOutput('structure'), $this->dump($catalogue, 'messages'));
+        $this->assertEquals($this->getOutput('structure'), preg_replace("/\n/", "\r\n", $this->dump($catalogue)));
     }
 
-    public function testDumpStructureWithMetadata()
+    public function testDumpStructureWithMetadata(): void
     {
         $catalogue = new MessageCatalogue();
         $catalogue->setLocale('en');
@@ -80,15 +80,15 @@ abstract class BaseDumperTest extends TestCase
         $message = new Message('foo.baz');
         $catalogue->add($message);
 
-        $this->assertEquals($this->getOutput('structure_with_metadata'), $this->dump($catalogue, 'messages'));
+        $this->assertEquals($this->getOutput('structure_with_metadata'), preg_replace("/\n/", "\r\n", $this->dump($catalogue)));
     }
 
     abstract protected function getDumper();
 
     abstract protected function getOutput($key);
 
-    private function dump(MessageCatalogue $catalogue, $domain)
+    private function dump(MessageCatalogue $catalogue)
     {
-        return $this->getDumper()->dump($catalogue, $domain);
+        return $this->getDumper()->dump($catalogue, 'messages');
     }
 }

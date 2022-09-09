@@ -37,17 +37,23 @@ use Twig\NodeVisitor\AbstractNodeVisitor;
 class NormalizingNodeVisitor extends AbstractNodeVisitor
 {
     /**
+     * @param Node $node
+     * @param Environment $env
+     *
      * @return Node
      */
-    protected function doEnterNode(Node $node, Environment $env)
+    protected function doEnterNode(Node $node, Environment $env): Node
     {
         return $node;
     }
 
     /**
+     * @param Node $node
+     * @param Environment $env
+     *
      * @return ConstantExpression|Node
      */
-    protected function doLeaveNode(Node $node, Environment $env)
+    protected function doLeaveNode(Node $node, Environment $env): ConstantExpression|Node
     {
         if (
             $node instanceof ConcatBinary
@@ -63,7 +69,7 @@ class NormalizingNodeVisitor extends AbstractNodeVisitor
     /**
      * @return int
      */
-    public function getPriority()
+    public function getPriority(): int
     {
         return -3;
     }

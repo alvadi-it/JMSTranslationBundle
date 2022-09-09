@@ -39,39 +39,39 @@ class XliffDumper implements DumperInterface
     /**
      * @var string
      */
-    private $sourceLanguage = 'en';
+    private string $sourceLanguage = 'en';
 
     /**
      * @var bool
      */
-    private $addDate = true;
+    private bool $addDate = true;
 
     /**
      * @var bool
      */
-    private $addReference = true;
+    private bool $addReference = true;
 
     /**
      * @var bool
      */
-    private $addReferencePosition = true;
+    private bool $addReferencePosition = true;
 
-    public function setAddDate($bool)
+    public function setAddDate($bool): void
     {
         $this->addDate = (bool) $bool;
     }
 
-    public function setSourceLanguage($lang)
+    public function setSourceLanguage($lang): void
     {
         $this->sourceLanguage = $lang;
     }
 
-    public function setAddReference($bool)
+    public function setAddReference($bool): void
     {
         $this->addReference = $bool;
     }
 
-    public function setAddReferencePosition($bool)
+    public function setAddReferencePosition($bool): void
     {
         $this->addReferencePosition = $bool;
     }
@@ -81,8 +81,9 @@ class XliffDumper implements DumperInterface
      * @param MessageCatalogue|string $domain
      *
      * @return string
+     * @throws \DOMException
      */
-    public function dump(MessageCatalogue $catalogue, $domain = 'messages')
+    public function dump(MessageCatalogue $catalogue, $domain = 'messages'): string
     {
         $doc = new \DOMDocument('1.0', 'utf-8');
         $doc->formatOutput = true;
@@ -163,29 +164,27 @@ class XliffDumper implements DumperInterface
                 $target->setAttribute('state', XliffMessage::STATE_NEW);
             }
 
-            if ($this->addReference) {
-                // As per the OASIS XLIFF 1.2 non-XLIFF elements must be at the end of the <trans-unit>
-                if ($sources = $message->getSources()) {
-                    $sortedSources = $this->getSortedSources($sources);
-                    foreach ($sortedSources as $source) {
-                        if ($source instanceof FileSource) {
-                            $unit->appendChild($refFile = $doc->createElement('jms:reference-file', $source->getPath()));
+            // As per the OASIS XLIFF 1.2 non-XLIFF elements must be at the end of the <trans-unit>
+            if ($this->addReference && $sources = $message->getSources()) {
+                $sortedSources = $this->getSortedSources($sources);
+                foreach ($sortedSources as $source) {
+                    if ($source instanceof FileSource) {
+                        $unit->appendChild($refFile = $doc->createElement('jms:reference-file', $source->getPath()));
 
-                            if ($this->addReferencePosition) {
-                                if ($source->getLine()) {
-                                    $refFile->setAttribute('line', (string) $source->getLine());
-                                }
-
-                                if ($source->getColumn()) {
-                                    $refFile->setAttribute('column', (string) $source->getColumn());
-                                }
+                        if ($this->addReferencePosition) {
+                            if ($source->getLine()) {
+                                $refFile->setAttribute('line', (string) $source->getLine());
                             }
 
-                            continue;
+                            if ($source->getColumn()) {
+                                $refFile->setAttribute('column', (string) $source->getColumn());
+                            }
                         }
 
-                        $unit->appendChild($doc->createElementNS('jms:reference', (string) $source));
+                        continue;
                     }
+
+                    $unit->appendChild($doc->createElementNS('jms:reference', (string) $source));
                 }
             }
 
@@ -205,7 +204,7 @@ class XliffDumper implements DumperInterface
      *
      * @return array
      */
-    protected function getSortedSources(array $sources)
+    protected function getSortedSources(array $sources): array
     {
         $indexedSources = [];
         foreach ($sources as $source) {
