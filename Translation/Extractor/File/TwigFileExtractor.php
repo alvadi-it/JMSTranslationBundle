@@ -66,10 +66,7 @@ class TwigFileExtractor extends AbstractNodeVisitor implements FileVisitorInterf
         $this->traverser = new NodeTraverser($env, [$this]);
     }
 
-    /**
-     * @return Node
-     */
-    public function enterNode(Node $node, Environment $env): Node
+    protected function doEnterNode(Node $node, Environment $env): Node
     {
         $this->stack[] = $node;
 
@@ -179,13 +176,7 @@ class TwigFileExtractor extends AbstractNodeVisitor implements FileVisitorInterf
         }
     }
 
-    /**
-     * @param Node $node
-     * @param Environment $env
-     *
-     * @return Node
-     */
-    public function leaveNode(Node $node, Environment $env): Node
+    protected function doLeaveNode(Node $node, Environment $env): Node
     {
         array_pop($this->stack);
 
