@@ -36,9 +36,6 @@ use Symfony\Component\Translation\MessageCatalogue;
  */
 class XliffLoader implements LoaderInterface
 {
-    /**
-     * {@inheritdoc}
-     */
     public function load(mixed $resource, string $locale, string $domain = 'messages'): MessageCatalogue
     {
         $previous = libxml_use_internal_errors(true);

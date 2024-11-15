@@ -177,7 +177,9 @@ class Updater
                 $this->config->getLocale(),
                 $format
             );
+
             $this->logger->info(sprintf('Writing translation file "%s".', $outputFile));
+
             $this->writer->write($this->scannedCatalogue, $name, $outputFile, $format);
         }
     }
@@ -228,6 +230,7 @@ class Updater
         $this->config = $config;
 
         $this->logger->info(sprintf('Loading catalogues from "%s"', $config->getTranslationsDir()));
+
         $this->existingCatalogue = new MessageCatalogue();
 
         // load external resources, so current translations can be reused in the final translation
@@ -250,6 +253,7 @@ class Updater
         $this->extractor->setEnabledExtractors($config->getEnabledExtractors());
 
         $this->logger->info('Extracting translation keys');
+
         $this->scannedCatalogue = $this->extractor->extract();
         $this->scannedCatalogue->setLocale($config->getLocale());
 

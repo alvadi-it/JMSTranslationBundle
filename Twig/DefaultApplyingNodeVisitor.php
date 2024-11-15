@@ -29,7 +29,7 @@ use Twig\Node\Expression\ConditionalExpression;
 use Twig\Node\Expression\ConstantExpression;
 use Twig\Node\Expression\FilterExpression;
 use Twig\Node\Node;
-use Twig\NodeVisitor\AbstractNodeVisitor;
+use Twig\NodeVisitor\NodeVisitorInterface;
 
 /**
  * Applies the value of the "desc" filter if the "trans" filter has no
@@ -39,7 +39,7 @@ use Twig\NodeVisitor\AbstractNodeVisitor;
  *
  * @author Johannes M. Schmitt <schmittjoh@gmail.com>
  */
-class DefaultApplyingNodeVisitor extends AbstractNodeVisitor
+class DefaultApplyingNodeVisitor implements NodeVisitorInterface
 {
     /**
      * @var bool
@@ -51,13 +51,7 @@ class DefaultApplyingNodeVisitor extends AbstractNodeVisitor
         $this->enabled = (bool) $bool;
     }
 
-    /**
-     * @param Node $node
-     * @param Environment $env
-     *
-     * @return FilterExpression|Node
-     */
-    public function doEnterNode(Node $node, Environment $env): FilterExpression|Node
+    public function enterNode(Node $node, Environment $env): Node
     {
         if (!$this->enabled) {
             return $node;
@@ -65,13 +59,12 @@ class DefaultApplyingNodeVisitor extends AbstractNodeVisitor
 
         if (
             $node instanceof FilterExpression
-                && 'desc' === $node->getNode('filter')->getAttribute('value')
+            && 'desc' === ($node->hasAttribute('name') ? $node->getAttribute('name') : $node->getNode('filter')->getAttribute('value'))
         ) {
             $transNode = $node->getNode('node');
             while (
                 $transNode instanceof FilterExpression
-                       && 'trans' !== $transNode->getNode('filter')->getAttribute('value')
-                       && 'transchoice' !== $transNode->getNode('filter')->getAttribute('value')
+                && !in_array($transNode->hasAttribute('name') ? $transNode->getAttribute('name') : $transNode->getNode('filter')->getAttribute('value'), ['trans', 'transchoice'], true)
             ) {
                 $transNode = $transNode->getNode('node');
             }
@@ -89,7 +82,7 @@ class DefaultApplyingNodeVisitor extends AbstractNodeVisitor
             // if the |transchoice filter is used, delegate the call to the TranslationExtension
             // so that we can catch a possible exception when the default translation has not yet
             // been extracted
-            if ('transchoice' === $transNode->getNode('filter')->getAttribute('value')) {
+            if ('transchoice' === ($transNode->hasAttribute('name') ? $transNode->getAttribute('name') : $transNode->getNode('filter')->getAttribute('value'))) {
                 $transchoiceArguments = new ArrayExpression([], $transNode->getTemplateLine());
                 $transchoiceArguments->addElement($wrappingNode->getNode('node'));
                 $transchoiceArguments->addElement($defaultNode);
@@ -136,7 +129,7 @@ class DefaultApplyingNodeVisitor extends AbstractNodeVisitor
         return $node;
     }
 
-    public function doLeaveNode(Node $node, Environment $env): Node
+    public function leaveNode(Node $node, Environment $env): Node
     {
         return $node;
     }

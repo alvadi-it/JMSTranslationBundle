@@ -23,14 +23,14 @@ namespace JMS\TranslationBundle\Twig;
 use Twig\Environment;
 use Twig\Node\Expression\FilterExpression;
 use Twig\Node\Node;
-use Twig\NodeVisitor\AbstractNodeVisitor;
+use Twig\NodeVisitor\NodeVisitorInterface;
 
 /**
  * Removes translation metadata filters from the AST.
  *
  * @author Johannes M. Schmitt <schmittjoh@gmail.com>
  */
-class RemovingNodeVisitor extends AbstractNodeVisitor
+class RemovingNodeVisitor implements NodeVisitorInterface
 {
     /**
      * @var bool
@@ -42,16 +42,10 @@ class RemovingNodeVisitor extends AbstractNodeVisitor
         $this->enabled = (bool) $bool;
     }
 
-    /**
-     * @param Node $node
-     * @param Environment $env
-     *
-     * @return FilterExpression|Node
-     */
-    protected function doEnterNode(Node $node, Environment $env): FilterExpression|Node
+    public function enterNode(Node $node, Environment $env): Node
     {
         if ($this->enabled && $node instanceof FilterExpression) {
-            $name = $node->getNode('filter')->getAttribute('value');
+            $name = $node->hasAttribute('name') ? $node->getAttribute('name') : $node->getNode('filter')->getAttribute('value');
 
             if ('desc' === $name || 'meaning' === $name) {
                 return $this->enterNode($node->getNode('node'), $env);
@@ -61,13 +55,7 @@ class RemovingNodeVisitor extends AbstractNodeVisitor
         return $node;
     }
 
-    /**
-     * @param Node $node
-     * @param Environment $env
-     *
-     * @return Node
-     */
-    protected function doLeaveNode(Node $node, Environment $env): Node
+    public function leaveNode(Node $node, Environment $env): Node
     {
         return $node;
     }

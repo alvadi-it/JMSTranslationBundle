@@ -69,7 +69,7 @@ class TwigFileExtractor extends AbstractNodeVisitor implements FileVisitorInterf
     /**
      * @return Node
      */
-    protected function doEnterNode(Node $node, Environment $env): TransNode|Node|FilterExpression
+    public function enterNode(Node $node, Environment $env): Node
     {
         $this->stack[] = $node;
 
@@ -85,7 +85,7 @@ class TwigFileExtractor extends AbstractNodeVisitor implements FileVisitorInterf
             $message->addSource($this->fileSourceFactory->create($this->file, $node->getTemplateLine()));
             $this->catalogue->add($message);
         } elseif ($node instanceof FilterExpression) {
-            $name = $node->getNode('filter')->getAttribute('value');
+            $name = $node->hasAttribute('name') ? $node->getAttribute('name') : $node->getNode('filter')->getAttribute('value');
 
             if ('trans' === $name || 'transchoice' === $name) {
                 $idNode = $node->getNode('node');
@@ -120,7 +120,8 @@ class TwigFileExtractor extends AbstractNodeVisitor implements FileVisitorInterf
                         break;
                     }
 
-                    $name = $this->stack[$i]->getNode('filter')->getAttribute('value');
+                    $name = $this->stack[$i]->hasAttribute('name') ? $this->stack[$i]->getAttribute('name') : $this->stack[$i]->getNode('filter')->getAttribute('value');
+
                     if ($name === 'desc' || $name === 'meaning') {
                         $arguments = iterator_to_array($this->stack[$i]->getNode('arguments'));
                         if (! isset($arguments[0])) {
@@ -184,7 +185,7 @@ class TwigFileExtractor extends AbstractNodeVisitor implements FileVisitorInterf
      *
      * @return Node
      */
-    protected function doLeaveNode(Node $node, Environment $env): Node
+    public function leaveNode(Node $node, Environment $env): Node
     {
         array_pop($this->stack);
 

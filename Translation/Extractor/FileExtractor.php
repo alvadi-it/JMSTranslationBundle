@@ -106,7 +106,7 @@ class FileExtractor implements ExtractorInterface, LoggerAwareInterface
         $this->setLogger($logger);
         $lexer = new Lexer();
         $factory = new ParserFactory();
-        $this->phpParser = $factory->create(ParserFactory::PREFER_PHP7, $lexer);
+        $this->phpParser = \method_exists($factory, 'create') ? $factory->create(ParserFactory::PREFER_PHP7, $lexer) : $factory->createForNewestSupportedVersion();
 
         foreach ($this->twig->getNodeVisitors() as $visitor) {
             if ($visitor instanceof RemovingNodeVisitor) {
