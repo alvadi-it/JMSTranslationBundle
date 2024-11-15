@@ -31,7 +31,7 @@
         "symfony/translation-contracts": "^3.0",
         "symfony/validator": "^7.0",
         "twig/twig": "^3.0",
-        "psr/log": "^2.0"
+        "psr/log": "^1.0 || ^2.0"
     },
     "require-dev": {
         "doctrine/annotations": "^1.11",
